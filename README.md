@@ -6,19 +6,23 @@ Library to generate and validate STs and TGTs
 
 Add this line to your application's Gemfile:
 
+```ruby
     gem 'cassette'
+```
 
 And then execute:
 
+```shell
     $ bundle
+```
 
 ## Usage
 
 Require this library and create an intializer to set its configuration:
 
-
+```ruby
     Cassette.config = config
-
+```
 
 where config is an object that responds to the methods #base for the base CAS uri, #username and #password
 if you are authenticating on other systems and #service and #base\_authority if you are using the authentication filter
@@ -27,32 +31,32 @@ to authenticate your app
 
 You may also set the caching backend using the .backend= module method:
 
-
+```ruby
     Cassette::Cache.backend = ActiveSupport::Cache::MemcacheStorage.new
-
+```
 
 By default, Cassette::Cache will check if you have Rails.cache defined or instantiate a new ActiveSupport::Cache::MemoryStore
 
 
 To authenticate your Rails app, add to your ApplicationController (or any authenticated controller):
 
-
+```ruby
     class ApplicationController < ActionController::Base
       include Cassette::Authentication::Filter
 
 
-      (...)
+      # (...)
 
     end
-
+```
 
 You should also rescue from Cassette::Errors::Forbidden with more friendly errors
 
 If you wish to have actions that skip the authentication filter, add to your controller:
 
-
+```ruby
     skip_authentication [options]
-
+```
 
 Where options are the same options you can pass to Rails' __skip_before_filter__ method
 
@@ -61,13 +65,13 @@ Where options are the same options you can pass to Rails' __skip_before_filter__
 
 If you are authenticating users with RubyCAS and want role checking, in your rubycas initializer:
 
-
+```ruby
     require "cas/rubycas"
-
+```
 
 And in your ApplicationController (or any authenticated controller):
 
-
+```ruby
     include Cassette::Rubycas::Helper
 
     # - Allow only employees:
@@ -85,7 +89,7 @@ And in your ApplicationController (or any authenticated controller):
     # rescue_from Cassette::Errors::NotACustomer do
     #   redirect_to '/403.html'
     # end
-
+```
 
 ## Instantiating Cassette::Client and Cassette::Authentication
 
