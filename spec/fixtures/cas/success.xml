@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+  <cas:authenticationSuccess>
+    <cas:user>test-user</cas:user>
+    <!-- Begin Ldap Attributes -->
+    <cas:attributes>
+      <cas:authorities>[CUPOM, AUDITING,]</cas:authorities>
+      <cas:cn>Test System</cas:cn>
+    </cas:attributes>
+    <!-- End Ldap Attributes -->
+    </cas:authenticationSuccess>
+</cas:serviceResponse>

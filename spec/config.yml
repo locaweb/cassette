@@ -1,0 +1,5 @@
+username: "user"
+password: "secret"
+service: "test-api.example.org"
+base: "https://some-cas.example.org"
+base_authority: "CASTEST"
