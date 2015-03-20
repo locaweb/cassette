@@ -7,13 +7,13 @@ Library to generate and validate STs and TGTs
 Add this line to your application's Gemfile:
 
 ```ruby
-    gem 'cassette'
+gem 'cassette'
 ```
 
 And then execute:
 
 ```shell
-    $ bundle
+$ bundle
 ```
 
 ## Usage
@@ -21,7 +21,7 @@ And then execute:
 Require this library and create an intializer to set its configuration:
 
 ```ruby
-    Cassette.config = config
+Cassette.config = config
 ```
 
 where config is an object that responds to the methods #base for the base CAS uri, #username and #password
@@ -32,7 +32,7 @@ to authenticate your app
 You may also set the caching backend using the .backend= module method:
 
 ```ruby
-    Cassette::Cache.backend = ActiveSupport::Cache::MemcacheStorage.new
+Cassette::Cache.backend = ActiveSupport::Cache::MemcacheStorage.new
 ```
 
 By default, Cassette::Cache will check if you have Rails.cache defined or instantiate a new ActiveSupport::Cache::MemoryStore
@@ -41,13 +41,11 @@ By default, Cassette::Cache will check if you have Rails.cache defined or instan
 To authenticate your Rails app, add to your ApplicationController (or any authenticated controller):
 
 ```ruby
-    class ApplicationController < ActionController::Base
-      include Cassette::Authentication::Filter
+class ApplicationController < ActionController::Base
+  include Cassette::Authentication::Filter
 
-
-      # (...)
-
-    end
+  # ...
+end
 ```
 
 You should also rescue from Cassette::Errors::Forbidden with more friendly errors
@@ -55,7 +53,11 @@ You should also rescue from Cassette::Errors::Forbidden with more friendly error
 If you wish to have actions that skip the authentication filter, add to your controller:
 
 ```ruby
-    skip_authentication [options]
+class SomeController < ApplicationController
+    skip_authentication # [*options]
+    
+    # skip_authentication only: "index"
+end
 ```
 
 Where options are the same options you can pass to Rails' __skip_before_filter__ method
@@ -66,19 +68,20 @@ Where options are the same options you can pass to Rails' __skip_before_filter__
 If you are authenticating users with RubyCAS and want role checking, in your rubycas initializer:
 
 ```ruby
-    require "cas/rubycas"
+require "cas/rubycas"
 ```
 
 And in your ApplicationController (or any authenticated controller):
 
 ```ruby
+class SomeController < ApplicationController
     include Cassette::Rubycas::Helper
 
     # - Allow only employees:
     #
     # before_filter :employee_only_filter
     #
-    # rescue_from Cassette::Errors::NotAnEmployee d
+    # rescue_from Cassette::Errors::NotAnEmployee do
     #   redirect_to '/403.html'
     # end
 
@@ -89,6 +92,7 @@ And in your ApplicationController (or any authenticated controller):
     # rescue_from Cassette::Errors::NotACustomer do
     #   redirect_to '/403.html'
     # end
+end
 ```
 
 ## Instantiating Cassette::Client and Cassette::Authentication
