@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
-require "active_support/concern"
-require "cassette/authentication/user"
+require 'active_support/concern'
+require 'cassette/authentication/user'
 
 module Cassette::Authentication::Filter
   extend ActiveSupport::Concern
@@ -18,10 +18,10 @@ module Cassette::Authentication::Filter
   end
 
   def validate_authentication_ticket(service = Cassette.config.service)
-    ticket = request.headers["Service-Ticket"] || params[:ticket]
+    ticket = request.headers['Service-Ticket'] || params[:ticket]
 
-    if ENV["NOAUTH"] && !ticket
-      Cassette.logger.debug "NOAUTH set and no Service Ticket, skipping authentication"
+    if ENV['NOAUTH'] && !ticket
+      Cassette.logger.debug 'NOAUTH set and no Service Ticket, skipping authentication'
       self.current_user = Cassette::Authentication::User.new
       return
     end
@@ -30,12 +30,12 @@ module Cassette::Authentication::Filter
   end
 
   def validate_role!(role)
-    return if ENV["NOAUTH"]
-    raise Cassette::Errors::Forbidden unless current_user.has_role?(role)
+    return if ENV['NOAUTH']
+    fail Cassette::Errors::Forbidden unless current_user.has_role?(role)
   end
 
   def validate_raw_role!(role)
-    return if ENV["NOAUTH"]
-    raise Cassette::Errors::Forbidden unless current_user.has_raw_role?(role)
+    return if ENV['NOAUTH']
+    fail Cassette::Errors::Forbidden unless current_user.has_raw_role?(role)
   end
 end

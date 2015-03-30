@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require "active_support/cache"
+require 'active_support/cache'
 
 module Cassette
   module Cache
@@ -14,9 +14,7 @@ module Cassette
       end
     end
 
-    def backend=(backend)
-      @backend = backend
-    end
+    attr_writer :backend
 
     def uses_key(key)
       "uses:#{key}"

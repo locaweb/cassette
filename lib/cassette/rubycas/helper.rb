@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require "active_support/concern"
+require 'active_support/concern'
 
 module Cassette
   module Rubycas
@@ -19,18 +19,18 @@ module Cassette
       end
 
       def validate_authentication_ticket
-        return if ENV["NOAUTH"]
+        return if ENV['NOAUTH']
         ::CASClient::Frameworks::Rails::Filter.filter(self)
       end
 
       def employee_only_filter
-        return if ENV["NOAUTH"] or current_user.blank?
-        raise Cassette::Errors::NotAnEmployee unless current_user.employee?
+        return if ENV['NOAUTH'] || current_user.blank?
+        fail Cassette::Errors::NotAnEmployee unless current_user.employee?
       end
 
       def customer_only_filter
-        return if ENV["NOAUTH"] or current_user.blank?
-        raise Cassette::Errors::NotACustomer unless current_user.customer?
+        return if ENV['NOAUTH'] || current_user.blank?
+        fail Cassette::Errors::NotACustomer unless current_user.customer?
       end
 
       def cas_logout(to = root_url)
@@ -39,38 +39,34 @@ module Cassette
       end
 
       def fake_user
-        Cassette::Authentication::User.new({
-          login: "fake.user",
-          name: "Fake User",
-          email: "fake.user@locaweb.com.br",
-          authorities: [],
-          type: "customer"
-        })
+        Cassette::Authentication::User.new(login: 'fake.user',
+                                           name: 'Fake User',
+                                           email: 'fake.user@locaweb.com.br',
+                                           authorities: [],
+                                           type: 'customer')
       end
 
       def validate_role!(role)
-        return if ENV["NOAUTH"]
-        raise Cassette::Errors::Forbidden unless current_user.has_role?(role)
+        return if ENV['NOAUTH']
+        fail Cassette::Errors::Forbidden unless current_user.has_role?(role)
       end
 
       def validate_raw_role!(role)
-        return if ENV["NOAUTH"]
-        raise Cassette::Errors::Forbidden unless current_user.has_raw_role?(role)
+        return if ENV['NOAUTH']
+        fail Cassette::Errors::Forbidden unless current_user.has_raw_role?(role)
       end
 
       def current_user
-        return fake_user if ENV["NOAUTH"]
+        return fake_user if ENV['NOAUTH']
         return nil unless session[:cas_user]
 
         @current_user ||= begin
           attributes = session[:cas_extra_attributes]
-          Cassette::Authentication::User.new({
-            login: session[:cas_user],
-            name: attributes.try(:[], :cn),
-            email: attributes.try(:[], :email),
-            authorities: attributes.try(:[], :authorities),
-            type: attributes.try(:[], :type).try(:downcase)
-          })
+          Cassette::Authentication::User.new(login: session[:cas_user],
+                                             name: attributes.try(:[], :cn),
+                                             email: attributes.try(:[], :email),
+                                             authorities: attributes.try(:[], :authorities),
+                                             type: attributes.try(:[], :type).try(:downcase))
         end
       end
     end

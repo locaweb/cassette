@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require "cassette/rubycas/single_sign_out_constraint"
+require 'cassette/rubycas/single_sign_out_constraint'
 
 module Cassette
   module Rubycas
@@ -11,4 +11,3 @@ module Cassette
     end
   end
 end
-

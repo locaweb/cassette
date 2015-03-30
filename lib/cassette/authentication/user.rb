@@ -1,8 +1,8 @@
 # encoding: UTF-8
 
-require "cassette/authentication"
-require "cassette/authentication/authorities"
-require "delegate"
+require 'cassette/authentication'
+require 'cassette/authentication/authorities'
+require 'delegate'
 
 class Cassette::Authentication::User
   attr_accessor :login, :name, :authorities, :email, :ticket
@@ -16,7 +16,7 @@ class Cassette::Authentication::User
     @email       = attrs[:email]
     @ticket      = attrs[:ticket]
     @authorities = Cassette::Authentication::Authorities
-      .parse(attrs.fetch(:authorities, "[]"), config && config.base_authority)
+                   .parse(attrs.fetch(:authorities, '[]'), config && config.base_authority)
   end
 
   %w(customer employee).each do |type|

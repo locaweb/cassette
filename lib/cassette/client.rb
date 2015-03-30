@@ -15,14 +15,14 @@ module Cassette
     end
 
     def health_check
-      st_for("monitoring")
+      st_for('monitoring')
     end
 
     def tgt(usr, pwd, force = false)
-      logger.info "Requesting TGT"
+      logger.info 'Requesting TGT'
       cache.fetch_tgt(force: force) do
         response = http.post(tickets_uri, username: usr, password: pwd)
-        tgt = $1 if response.headers["Location"] =~ /tickets\/(.*)/
+        tgt = Regexp.last_match(1) if response.headers['Location'] =~ /tickets\/(.*)/
         logger.info "TGT is #{tgt}"
         tgt
       end
@@ -46,23 +46,18 @@ module Cassette
 
     attr_accessor :cache, :logger, :http, :config
 
-    def st_with_retry(user, pass, service)
+    def st_with_retry(user, pass, service, retrying = true)
+      st(tgt(user, pass, retrying), service)
+    rescue Cassette::Errors::NotFound => e
+      raise e unless retrying
+
+      logger.info 'Got 404 response, regenerating TGT'
       retrying = false
-      begin
-        st(tgt(user, pass, retrying), service)
-      rescue Cassette::Errors::NotFound => e
-        unless retrying
-          logger.info "Got 404 response, regenerating TGT"
-          retrying = true
-          retry
-        end
-        raise e
-      end
+      retry
     end
 
     def tickets_uri
-      "#{config.base.gsub(/\/?$/, "")}/v1/tickets"
+      "#{config.base.gsub(/\/?$/, '')}/v1/tickets"
     end
   end
 end
-

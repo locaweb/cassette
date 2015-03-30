@@ -1,17 +1,17 @@
 # encoding: UTF-8
 
-require "cassette/errors"
-require "cassette/cache"
-require "cassette/client/cache"
-require "cassette/client"
-require "cassette/authentication"
-require "cassette/authentication/authorities"
-require "cassette/authentication/user"
-require "cassette/authentication/cache"
-require "cassette/authentication/filter"
+require 'cassette/errors'
+require 'cassette/cache'
+require 'cassette/client/cache'
+require 'cassette/client'
+require 'cassette/authentication'
+require 'cassette/authentication/authorities'
+require 'cassette/authentication/user'
+require 'cassette/authentication/cache'
+require 'cassette/authentication/filter'
 
-require "faraday"
-require "logger"
+require 'faraday'
+require 'logger'
 
 module Cassette
   extend self
@@ -20,12 +20,12 @@ module Cassette
 
   def logger
     @@logger ||= begin
-      if defined?(Rails) && Rails.logger
-        Rails.logger
-      else
-        Logger.new("/dev/null")
-      end
-    end
+                   if defined?(Rails) && Rails.logger
+                     Rails.logger
+                   else
+                     Logger.new('/dev/null')
+                   end
+                 end
   end
 
   def logger=(logger)
@@ -43,8 +43,8 @@ module Cassette
   end
 
   def new_request(uri, timeout)
-    Faraday.new(url: uri, ssl: { verify: false, version: "TLSv1" }) do |builder|
-      builder.adapter :httpclient
+    Faraday.new(url: uri, ssl: { verify: false, version: 'TLSv1' }) do |builder|
+      builder.adapter Faraday.default_adapter
       builder.options.timeout = timeout
     end
   end
@@ -58,14 +58,14 @@ module Cassette
 
   def post(uri, payload, timeout = DEFAULT_TIMEOUT)
     perform(:post, uri, payload, timeout) do |req|
-      req.body = payload
+      req.body = URI.encode_www_form(payload)
       logger.debug "Request: #{req.inspect}"
     end
   end
 
   protected
 
-  def perform(op, uri, payload, timeout = DEFAULT_TIMEOUT, &block)
+  def perform(op, uri, _payload, timeout = DEFAULT_TIMEOUT, &block)
     request = new_request(uri, timeout)
     res = request.send(op, &block)
 
