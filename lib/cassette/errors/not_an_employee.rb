@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "cassette/errors"
+require 'cassette/errors'
 
 module Cassette
   module Errors
@@ -11,4 +11,3 @@ module Cassette
     end
   end
 end
-

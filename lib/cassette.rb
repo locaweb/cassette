@@ -1,17 +1,17 @@
 # encoding: UTF-8
 
-require "cassette/errors"
-require "cassette/cache"
-require "cassette/client/cache"
-require "cassette/client"
-require "cassette/authentication"
-require "cassette/authentication/authorities"
-require "cassette/authentication/user"
-require "cassette/authentication/cache"
-require "cassette/authentication/filter"
+require 'cassette/errors'
+require 'cassette/cache'
+require 'cassette/client/cache'
+require 'cassette/client'
+require 'cassette/authentication'
+require 'cassette/authentication/authorities'
+require 'cassette/authentication/user'
+require 'cassette/authentication/cache'
+require 'cassette/authentication/filter'
 
-require "faraday"
-require "logger"
+require 'faraday'
+require 'logger'
 
 module Cassette
   extend self
@@ -23,7 +23,7 @@ module Cassette
       if defined?(Rails) && Rails.logger
         Rails.logger
       else
-        Logger.new("/dev/null")
+        Logger.new('/dev/null')
       end
     end
   end
@@ -43,7 +43,7 @@ module Cassette
   end
 
   def new_request(uri, timeout)
-    Faraday.new(url: uri, ssl: { verify: false, version: "TLSv1" }) do |builder|
+    Faraday.new(url: uri, ssl: { verify: false, version: 'TLSv1' }) do |builder|
       builder.adapter :httpclient
       builder.options.timeout = timeout
     end
@@ -65,7 +65,7 @@ module Cassette
 
   protected
 
-  def perform(op, uri, payload, timeout = DEFAULT_TIMEOUT, &block)
+  def perform(op, uri, _payload, timeout = DEFAULT_TIMEOUT, &block)
     request = new_request(uri, timeout)
     res = request.send(op, &block)
 
