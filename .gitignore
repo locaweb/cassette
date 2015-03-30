@@ -3,5 +3,4 @@ coverage/
 .jenkins-build
 *.swp
 *.swo
-Gemfile.lock
 /spec/reports
