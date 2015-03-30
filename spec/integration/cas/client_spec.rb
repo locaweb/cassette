@@ -14,8 +14,9 @@ RSpec.describe 'Cassette::Client, Cassette::Authentication integration' do
 
     it 'validates an ST, extracting the user' do
       st = client.st_for(config.service)
+      user = authentication.ticket_user(st, config.service)
 
-      expect(user = authentication.ticket_user(st, config.service)).not_to be_blank
+      expect(user).not_to be_blank
       expect(user.login).to eql(config.username)
     end
   end
@@ -24,10 +25,11 @@ RSpec.describe 'Cassette::Client, Cassette::Authentication integration' do
     # it_behaves_like "a Cassette client and validator" do
     #   let(:config) do
     #     OpenStruct.new(
-    #       username: "test",
-    #       password: "secret",
-    #       base: "https://cas.example.org",
-    #       base_authority: "API"
+    #       username: "test.user",
+    #       password: "anothersecret",
+    #       base: "https://anothercas.example.org",
+    #       service: "qualquercoisa"
+    #       base_authority: "SYSTEM"
     #     )
     #   end
     # end
@@ -40,6 +42,7 @@ RSpec.describe 'Cassette::Client, Cassette::Authentication integration' do
     #       username: "test.user",
     #       password: "anothersecret",
     #       base: "https://anothercas.example.org",
+    #       service: "qualquercoisa"
     #       base_authority: "SYSTEM"
     #     )
     #   end

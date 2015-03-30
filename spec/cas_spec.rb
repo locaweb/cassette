@@ -5,7 +5,7 @@ describe Cassette do
   let(:response) do
     Faraday.new do |builder|
       builder.adapter :test do |stub|
-        stub.post(uri, 'data') do |env|
+        stub.post(uri, 'ping=pong') do |env|
           headers = env.request_headers
           [200, {}, '{ok: true}']
         end
@@ -16,7 +16,7 @@ describe Cassette do
   let(:failed_response) do
     Faraday.new do |builder|
       builder.adapter :test do |stub|
-        stub.post(uri, 'data') do |env|
+        stub.post(uri, 'ping=pong') do |env|
           headers = env.request_headers
           [500, {}, '{ok: false}']
         end
@@ -34,12 +34,12 @@ describe Cassette do
   describe '.post' do
     it 'forwards requests' do
       allow(Cassette).to receive(:new_request).with(uri, 5).and_return(response)
-      Cassette.post(uri, 'data', 5)
+      Cassette.post(uri, { ping: :pong }, 5)
     end
 
     it 'raises an exception when failed' do
       allow(Cassette).to receive(:new_request).with(uri, 5).and_return(failed_response)
-      expect { Cassette.post(uri, 'data', 5) }.to raise_error(Cassette::Errors::InternalServerError)
+      expect { Cassette.post(uri, { ping: :pong }, 5) }.to raise_error(Cassette::Errors::InternalServerError)
     end
   end
 

@@ -20,12 +20,12 @@ module Cassette
 
   def logger
     @@logger ||= begin
-      if defined?(Rails) && Rails.logger
-        Rails.logger
-      else
-        Logger.new('/dev/null')
-      end
-    end
+                   if defined?(Rails) && Rails.logger
+                     Rails.logger
+                   else
+                     Logger.new('/dev/null')
+                   end
+                 end
   end
 
   def logger=(logger)
@@ -44,7 +44,7 @@ module Cassette
 
   def new_request(uri, timeout)
     Faraday.new(url: uri, ssl: { verify: false, version: 'TLSv1' }) do |builder|
-      builder.adapter :httpclient
+      builder.adapter Faraday.default_adapter
       builder.options.timeout = timeout
     end
   end
@@ -58,7 +58,7 @@ module Cassette
 
   def post(uri, payload, timeout = DEFAULT_TIMEOUT)
     perform(:post, uri, payload, timeout) do |req|
-      req.body = payload
+      req.body = URI.encode_www_form(payload)
       logger.debug "Request: #{req.inspect}"
     end
   end
