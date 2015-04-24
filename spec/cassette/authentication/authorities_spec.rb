@@ -1,4 +1,4 @@
-require 'spec_helper'
+
 
 describe Cassette::Authentication::Authorities do
   subject do

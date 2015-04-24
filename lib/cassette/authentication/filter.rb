@@ -17,7 +17,17 @@ module Cassette::Authentication::Filter
     end
   end
 
-  def validate_authentication_ticket(service = Cassette.config.service)
+  def accepts_authentication_service?(service)
+    config = Cassette.config
+
+    if config.respond_to?(:services)
+      config.services.member?(service) || config.service == service
+    else
+      config.service == service
+    end
+  end
+
+  def validate_authentication_ticket(service = authentication_service)
     ticket = request.headers['Service-Ticket'] || params[:ticket]
 
     if ENV['NOAUTH']
@@ -26,7 +36,12 @@ module Cassette::Authentication::Filter
       return
     end
 
+    fail Cassette::Errors::Forbidden unless accepts_authentication_service?(authentication_service)
     self.current_user = Cassette::Authentication.validate_ticket(ticket, service)
+  end
+
+  def authentication_service
+    Cassette.config.service
   end
 
   def validate_role!(role)

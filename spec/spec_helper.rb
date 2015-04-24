@@ -4,6 +4,8 @@ require 'simplecov-gem-adapter'
 require 'yaml'
 require 'webmock/rspec'
 
+Dir['spec/support/**/*.rb'].each { |f| load f }
+
 module Fixtures
   def fixture(name)
     File.read("spec/fixtures/#{name}")

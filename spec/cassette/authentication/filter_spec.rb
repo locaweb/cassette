@@ -1,22 +1,10 @@
 # encoding: utf-8
 
-require 'spec_helper'
-require 'active_support/core_ext/hash/indifferent_access'
+
 
 describe Cassette::Authentication::Filter do
   before do
     allow(Cassette::Authentication).to receive(:validate_ticket)
-  end
-
-  class ControllerMock
-    attr_accessor :params, :request, :current_user
-    def self.before_filter(*); end
-    include Cassette::Authentication::Filter
-
-    def initialize(params = {}, headers = {})
-      self.params = params.with_indifferent_access
-      self.request = OpenStruct.new(headers: headers.with_indifferent_access)
-    end
   end
 
   shared_context 'with NOAUTH' do
@@ -30,7 +18,7 @@ describe Cassette::Authentication::Filter do
   end
 
   describe '#validate_raw_role!' do
-    let(:controller) { ControllerMock.new }
+    let(:controller) { ControllerMock(described_class).new }
     let(:current_user) { instance_double(Cassette::Authentication::User) }
 
     before do
@@ -64,7 +52,7 @@ describe Cassette::Authentication::Filter do
   end
 
   describe '#validate_role!' do
-    let(:controller) { ControllerMock.new }
+    let(:controller) { ControllerMock(described_class).new }
     let(:current_user) { instance_double(Cassette::Authentication::User) }
 
     before do
@@ -97,7 +85,6 @@ describe Cassette::Authentication::Filter do
     end
   end
 
-
   describe '#validate_authentication_ticket' do
     shared_examples_for 'controller without authentication' do
       it 'does not validate tickets' do
@@ -113,14 +100,14 @@ describe Cassette::Authentication::Filter do
 
     it_behaves_like 'with NOAUTH' do
       context 'and no ticket' do
-        let(:controller) { ControllerMock.new }
+        let(:controller) { ControllerMock(described_class).new }
 
         it_behaves_like 'controller without authentication'
       end
 
       context 'and a ticket header' do
         let(:controller) do
-          ControllerMock.new({}, 'Service-Ticket' => 'le ticket')
+          ControllerMock(described_class).new({}, 'Service-Ticket' => 'le ticket')
         end
 
         it_behaves_like 'controller without authentication'
@@ -128,43 +115,126 @@ describe Cassette::Authentication::Filter do
 
       context 'and a ticket param' do
         let(:controller) do
-          ControllerMock.new(ticket: 'le ticket')
+          ControllerMock(described_class).new(ticket: 'le ticket')
         end
 
         it_behaves_like 'controller without authentication'
       end
     end
 
-    context 'with a ticket in the query string *AND* headers' do
+    context 'when accepts_authentication_service? returns false' do
       let(:controller) do
-        ControllerMock.new({ 'ticket' => 'le other ticket' }, 'Service-Ticket' => 'le ticket')
+        ControllerMock(described_class).new(ticket: 'le ticket')
       end
 
-      it 'should send only the header ticket to validation' do
-        controller.validate_authentication_ticket
-        expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+      before do
+        expect(controller).to receive(:accepts_authentication_service?)
+          .with(Cassette.config.service) { false }
+      end
+
+      it 'raises a Cassette::Errors::Forbidden' do
+        expect { controller.validate_authentication_ticket }
+          .to raise_error(Cassette::Errors::Forbidden)
       end
     end
 
-    context 'with a ticket in the query string' do
-      let(:controller) do
-        ControllerMock.new('ticket' => 'le ticket')
+    context 'when accepts_authentication_service? returns true' do
+      before do
+        expect(controller).to receive(:accepts_authentication_service?).with(anything) { true }
       end
 
-      it 'should send the ticket to validation' do
-        controller.validate_authentication_ticket
-        expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+      context 'with a ticket in the query string *AND* headers' do
+        let(:controller) do
+          ControllerMock(described_class).new({ 'ticket' => 'le other ticket' },
+                                              'Service-Ticket' => 'le ticket')
+        end
+
+        it 'should send only the header ticket to validation' do
+          controller.validate_authentication_ticket
+          expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+        end
+      end
+
+      context 'with a ticket in the query string' do
+        let(:controller) do
+          ControllerMock(described_class).new('ticket' => 'le ticket')
+        end
+
+        it 'should send the ticket to validation' do
+          controller.validate_authentication_ticket
+          expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+        end
+      end
+
+      context 'when #authentication_service is overriden' do
+        let(:controller) do
+          mod = Module.new do
+            def authentication_service
+              "subdomain.#{Cassette.config.service}"
+            end
+          end
+
+          ControllerMock(described_class, mod).new({}, 'Service-Ticket' => 'le ticket')
+        end
+
+        it 'validates with the overriden value and not the config' do
+          controller.validate_authentication_ticket
+
+          expect(Cassette::Authentication).to have_received(:validate_ticket)
+            .with('le ticket', "subdomain.#{Cassette.config.service}")
+        end
+      end
+
+      context 'with a ticket in the Service-Ticket header' do
+        let(:controller) do
+          ControllerMock(described_class).new({}, 'Service-Ticket' => 'le ticket')
+        end
+
+        it 'sends the ticket to validation' do
+          controller.validate_authentication_ticket
+
+          expect(Cassette::Authentication).to have_received(:validate_ticket)
+            .with('le ticket', Cassette.config.service)
+        end
       end
     end
+  end
 
-    context 'with a ticket in the Service-Ticket header' do
-      let(:controller) do
-        ControllerMock.new({}, 'Service-Ticket' => 'le ticket')
+  describe '#accepts_authentication_service?' do
+    let(:controller) do
+      ControllerMock(described_class).new(ticket: 'le ticket')
+    end
+
+    before do
+      allow(Cassette).to receive(:config) { config }
+    end
+
+    subject { controller.accepts_authentication_service?(service) }
+
+    context 'when config responds to #services' do
+      let(:subdomain) { "subdomain.acme.org" }
+      let(:not_related) { "acme.org" }
+
+      let(:config) do
+        OpenStruct.new(YAML.load_file('spec/config.yml').merge(services: [subdomain]))
       end
 
-      it 'should send the ticket to validation' do
-        controller.validate_authentication_ticket
-        expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+      context 'and the authentication service is included in the configuration' do
+        let(:service) { subdomain }
+
+        it { is_expected.to eq true }
+      end
+
+      context 'and the authentication service is Cassette.config.service' do
+        let(:service) { Cassette.config.service }
+
+        it { is_expected.to eq true }
+      end
+
+      context 'and the authentication service is not included in the configuration' do
+        let(:service) { not_related }
+
+        it { is_expected.to eq false }
       end
     end
   end
