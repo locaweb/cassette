@@ -24,7 +24,7 @@ Require this library and create an intializer to set its configuration:
 Cassette.config = config
 ```
 
-where config is an object that responds to the methods #base for the base CAS uri, #username and #password if you are authenticating on other systems and #service and #base\_authority if you are using the authentication filter to authenticate your app
+where config is an object that responds to the methods `base` for the base CAS uri, `username` and `password` if you are authenticating on other systems and #service and `base\_authority` if you are using the authentication filter to authenticate your app.
 
 You may also set the caching backend using the .backend= module method:
 
@@ -32,9 +32,9 @@ You may also set the caching backend using the .backend= module method:
 Cassette::Cache.backend = ActiveSupport::Cache::MemcacheStorage.new
 ```
 
-By default, Cassette::Cache will check if you have Rails.cache defined or instantiate a new ActiveSupport::Cache::MemoryStore
+By default, `Cassette::Cache` will check if you have `Rails.cache` defined or instantiate a new `ActiveSupport::Cache::MemoryStore`
 
-To authenticate your Rails app, add to your ApplicationController (or any authenticated controller):
+To authenticate your Rails app, add to your `ApplicationController` (or any authenticated controller):
 
 ```ruby
 class ApplicationController < ActionController::Base
@@ -44,7 +44,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-You should also rescue from Cassette::Errors::Forbidden with more friendly errors
+You should also rescue from `Cassette::Errors::Forbidden` with more friendly errors
 
 If you wish to have actions that skip the authentication filter, add to your controller:
 
@@ -56,11 +56,11 @@ class SomeController < ApplicationController
 end
 ```
 
-Where options are the same options you can pass to Rails' __skip_before_filter__ method
+Where options are the same options you can pass to Rails' `skip_before_filter` method
 
 ### Overriding the authenticated service
 
-You can the service being authenticated in a controller (or group of controllers). To do this, override the instance method __authentication_service__:
+You can the service being authenticated in a controller (or group of controllers). To do this, override the instance method `authentication_service`:
 
 ```ruby
 class ApiController < ApplicationController
@@ -76,10 +76,10 @@ class ApiController < ApplicationController
 end
 ```
 
-### Accepting multiple services
+### Accepting multiple services (restricting from a list)
 
-If you wish to have controller aceppt multiple services, use the __Cassette::Authentication::MultiServiceFilter__.
-Your config object must respond to __services__ and the filter will check your controller __authentication_service__ against the list or the configured service.
+If you wish to have controller aceppt multiple services, use the `Cassette::Authentication::MultiServiceFilter`.
+Your config object must respond to `services` and the filter will check your controller `authentication_service` against the list or the configured service.
 
 In your initializer:
 
@@ -103,7 +103,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-In this example, only tickets generated for __api.example.org__, __www.example.org__, __subdomain.example.org__ or __example.org__ will be accepted others will raise a __Cassette::Errors::Forbidden__.
+In this example, only tickets generated for __api.example.org__, __www.example.org__, __subdomain.example.org__ or __example.org__ will be accepted others will raise a `Cassette::Errors::Forbidden`.
 
 
 ## RubyCAS client helpers
@@ -115,7 +115,7 @@ If you are authenticating users with RubyCAS and want role checking, in your rub
 require "cas/rubycas"
 ```
 
-And in your ApplicationController (or any authenticated controller):
+And in your `ApplicationController` (or any authenticated controller):
 
 ```ruby
 class SomeController < ApplicationController
@@ -141,7 +141,7 @@ end
 
 ## Instantiating Cassette::Client and Cassette::Authentication
 
-You can create your own instances of __Cassette::Client__ (st/tgt generator) and __Cassette::Authentication__ (st validator).
+You can create your own instances of `Cassette::Client` (st/tgt generator) and `Cassette::Authentication` (st validator).
 
 The constructor accepts a hash with keys (as symbols) for the values of cache, logger, http_client and configuration.
 
