@@ -78,8 +78,7 @@ end
 
 ### Accepting multiple services (restricting from a list)
 
-If you wish to have controller aceppt multiple services, use the `Cassette::Authentication::MultiServiceFilter`.
-Your config object must respond to `services` and the filter will check your controller `authentication_service` against the list or the configured service.
+If you wish to have controller aceppt multiple services, your config object must respond to `services` and the filter will check your controller `authentication_service` against the list or the configured service.
 
 In your initializer:
 
@@ -95,16 +94,28 @@ And in your controller:
 
 ```ruby
 class ApplicationController < ActionController::Base
-  include Cassette::Authentication::MultiServiceFilter
-
   def authentication_service
     request.host
   end
 end
 ```
 
-In this example, only tickets generated for __api.example.org__, __www.example.org__, __subdomain.example.org__ or __example.org__ will be accepted others will raise a `Cassette::Errors::Forbidden`.
+### Accepting multiple services (customized)
 
+If whitelisting services is not enough for your application, you can override the `accepts_authentication_service?` in your controller.
+This method receives the service and returns a boolean if the service is ok or not.
+
+```ruby
+class ApplicationController < ActionController::Base
+  def accepts_authentication_service?(service)
+    service.ends_with?('my-domain.com')
+  end
+
+  def authentication_service
+    request.host
+  end
+end
+```
 
 ## RubyCAS client helpers
 
