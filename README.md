@@ -100,7 +100,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-In this example, only tickets generated for __api.example.org__, __www.example.org__, __subdomain.example.org__ or __example.org__ will be accepted.
+In this example, only tickets generated for __api.example.org__, __www.example.org__, __subdomain.example.org__ or __example.org__ will be accepted others will raise a __Cassette::Errors::Forbidden__.
 
 
 ## RubyCAS client helpers
