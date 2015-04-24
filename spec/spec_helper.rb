@@ -3,6 +3,8 @@ require 'simplecov-rcov'
 require 'simplecov-gem-adapter'
 require 'yaml'
 
+Dir['spec/support/**/*.rb'].each { |f| load f }
+
 module Fixtures
   def fixture(name)
     File.read("spec/fixtures/#{name}")

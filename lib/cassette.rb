@@ -9,6 +9,7 @@ require 'cassette/authentication/authorities'
 require 'cassette/authentication/user'
 require 'cassette/authentication/cache'
 require 'cassette/authentication/filter'
+require 'cassette/authentication/multi_service_filter'
 
 require 'faraday'
 require 'logger'

@@ -1,22 +1,10 @@
 # encoding: utf-8
 
 require 'spec_helper'
-require 'active_support/core_ext/hash/indifferent_access'
 
 describe Cassette::Authentication::Filter do
   before do
     allow(Cassette::Authentication).to receive(:validate_ticket)
-  end
-
-  class ControllerMock
-    attr_accessor :params, :request, :current_user
-    def self.before_filter(*); end
-    include Cassette::Authentication::Filter
-
-    def initialize(params = {}, headers = {})
-      self.params = params.with_indifferent_access
-      self.request = OpenStruct.new(headers: headers.with_indifferent_access)
-    end
   end
 
   shared_context 'with NOAUTH' do
@@ -30,7 +18,7 @@ describe Cassette::Authentication::Filter do
   end
 
   describe '#validate_raw_role!' do
-    let(:controller) { ControllerMock.new }
+    let(:controller) { ControllerMock(described_class).new }
     let(:current_user) { instance_double(Cassette::Authentication::User) }
 
     before do
@@ -64,7 +52,7 @@ describe Cassette::Authentication::Filter do
   end
 
   describe '#validate_role!' do
-    let(:controller) { ControllerMock.new }
+    let(:controller) { ControllerMock(described_class).new }
     let(:current_user) { instance_double(Cassette::Authentication::User) }
 
     before do
@@ -97,10 +85,10 @@ describe Cassette::Authentication::Filter do
     end
   end
 
-  describe '#validate_authentication_ticket' do
+  describe '.validate_authentication_ticket' do
     it_behaves_like 'with NOAUTH' do
       context 'and no ticket' do
-        let(:controller) { ControllerMock.new }
+        let(:controller) { ControllerMock(described_class).new }
 
         it 'should not validate tickets' do
           controller.validate_authentication_ticket
@@ -115,10 +103,10 @@ describe Cassette::Authentication::Filter do
 
       context 'and a ticket header' do
         let(:controller) do
-          ControllerMock.new({}, 'Service-Ticket' => 'le ticket')
+          ControllerMock(described_class).new({}, 'Service-Ticket' => 'le ticket')
         end
 
-        it 'should validate tickets' do
+        it 'should validate ticket' do
           controller.validate_authentication_ticket
           expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
         end
@@ -126,7 +114,7 @@ describe Cassette::Authentication::Filter do
 
       context 'and a ticket param' do
         let(:controller) do
-          ControllerMock.new(ticket: 'le ticket')
+          ControllerMock(described_class).new(ticket: 'le ticket')
         end
 
         it 'should validate tickets' do
@@ -138,7 +126,8 @@ describe Cassette::Authentication::Filter do
 
     context 'with a ticket in the query string *AND* headers' do
       let(:controller) do
-        ControllerMock.new({ 'ticket' => 'le other ticket' }, 'Service-Ticket' => 'le ticket')
+        ControllerMock(described_class).new({ 'ticket' => 'le other ticket' },
+                                            'Service-Ticket' => 'le ticket')
       end
 
       it 'should send only the header ticket to validation' do
@@ -149,7 +138,7 @@ describe Cassette::Authentication::Filter do
 
     context 'with a ticket in the query string' do
       let(:controller) do
-        ControllerMock.new('ticket' => 'le ticket')
+        ControllerMock(described_class).new('ticket' => 'le ticket')
       end
 
       it 'should send the ticket to validation' do
@@ -160,7 +149,7 @@ describe Cassette::Authentication::Filter do
 
     context 'with a ticket in the Service-Ticket header' do
       let(:controller) do
-        ControllerMock.new({}, 'Service-Ticket' => 'le ticket')
+        ControllerMock(described_class).new({}, 'Service-Ticket' => 'le ticket')
       end
 
       it 'should send the ticket to validation' do
