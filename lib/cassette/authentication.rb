@@ -18,7 +18,7 @@ module Cassette
     end
 
     def validate_ticket(ticket, service = config.service)
-      logger.debug "Cassette::Authentication validating ticket: #{ticket}"
+      logger.debug "Cassette::Authentication validating ticket: #{ticket}, #{service}"
       fail Cassette::Errors::AuthorizationRequired if ticket.nil? || ticket.blank?
 
       user = ticket_user(ticket, service)
@@ -30,7 +30,7 @@ module Cassette
     end
 
     def ticket_user(ticket, service = config.service)
-      cache.fetch_authentication(ticket) do
+      cache.fetch_authentication(ticket, service) do
         begin
           logger.info("Validating #{ticket} on #{validate_uri}")
           response = http.post(validate_uri, ticket: ticket, service: service).body
