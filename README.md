@@ -24,7 +24,7 @@ Require this library and create an intializer to set its configuration:
 Cassette.config = config
 ```
 
-where config is an object that responds to the methods `base` for the base CAS uri, `username` and `password` if you are authenticating on other systems and #service and `base\_authority` if you are using the authentication filter to authenticate your app.
+where config is an object that responds to the methods `base` for the base CAS uri, `username` and `password` if you are authenticating on other systems and `service` and `base_authority` if you are using the authentication filter to authenticate your app.
 
 You may also set the caching backend using the .backend= module method:
 
