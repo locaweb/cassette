@@ -2,8 +2,10 @@
 
 require 'active_support/core_ext/hash/indifferent_access'
 
-def ControllerMock(mod)
-  Class.new(ControllerMock).send(:include, mod)
+def ControllerMock(*mods)
+  mods.inject(Class.new(ControllerMock)) do |c, mod|
+    c.send(:include, mod)
+  end
 end
 
 class ControllerMock

@@ -24,10 +24,7 @@ Require this library and create an intializer to set its configuration:
 Cassette.config = config
 ```
 
-where config is an object that responds to the methods #base for the base CAS uri, #username and #password
-if you are authenticating on other systems and #service and #base\_authority if you are using the authentication filter
-to authenticate your app
-
+where config is an object that responds to the methods #base for the base CAS uri, #username and #password if you are authenticating on other systems and #service and #base\_authority if you are using the authentication filter to authenticate your app
 
 You may also set the caching backend using the .backend= module method:
 
@@ -36,7 +33,6 @@ Cassette::Cache.backend = ActiveSupport::Cache::MemcacheStorage.new
 ```
 
 By default, Cassette::Cache will check if you have Rails.cache defined or instantiate a new ActiveSupport::Cache::MemoryStore
-
 
 To authenticate your Rails app, add to your ApplicationController (or any authenticated controller):
 
@@ -55,12 +51,57 @@ If you wish to have actions that skip the authentication filter, add to your con
 ```ruby
 class SomeController < ApplicationController
     skip_authentication # [*options]
-    
+
     # skip_authentication only: "index"
 end
 ```
 
 Where options are the same options you can pass to Rails' __skip_before_filter__ method
+
+### Overriding the authenticated service
+
+You can the service being authenticated in a controller (or group of controllers). To do this, override the instance method __authentication_service__:
+
+```ruby
+class ApiController < ApplicationController
+  def authentication_service
+    "api.#{super}"
+
+    # or maybe a hardcoded:
+    # "api.example.org"
+  end
+end
+```
+
+### Accepting multiple services
+
+If you wish to have controller aceppt multiple services, use the __Cassette::Authentication::MultiServiceFilter__.
+Your config object must respond to __services__ and the filter will check your controller __authentication_service__ against the list or the configured service.
+
+In your initializer:
+
+```ruby
+Cassete.config = OpenStruct.new(
+  # omitted
+  service: "example.org",
+  services: ["api.example.org", "www.example.org", "subdomain.example.org"]
+)
+```
+
+And in your controller:
+
+```ruby
+class ApplicationController < ActionController::Base
+  include Cassette::Authentication::MultiServiceFilter
+
+  def authentication_service
+    request.host
+  end
+end
+```
+
+In this example, only tickets generated for __api.example.org__, __www.example.org__, __subdomain.example.org__ or __example.org__ will be accepted.
+
 
 ## RubyCAS client helpers
 

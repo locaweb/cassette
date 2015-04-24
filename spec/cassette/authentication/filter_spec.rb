@@ -85,7 +85,7 @@ describe Cassette::Authentication::Filter do
     end
   end
 
-  describe '.validate_authentication_ticket' do
+  describe '#validate_authentication_ticket' do
     it_behaves_like 'with NOAUTH' do
       context 'and no ticket' do
         let(:controller) { ControllerMock(described_class).new }
@@ -147,14 +147,35 @@ describe Cassette::Authentication::Filter do
       end
     end
 
+    context 'when #authentication_service is overriden' do
+      let(:controller) do
+        mod = Module.new do
+          def authentication_service
+            "subdomain.#{Cassette.config.service}"
+          end
+        end
+
+        ControllerMock(described_class, mod).new({}, 'Service-Ticket' => 'le ticket')
+      end
+
+      it 'validates with the overriden value and not the config' do
+        controller.validate_authentication_ticket
+
+        expect(Cassette::Authentication).to have_received(:validate_ticket)
+          .with('le ticket', "subdomain.#{Cassette.config.service}")
+      end
+    end
+
     context 'with a ticket in the Service-Ticket header' do
       let(:controller) do
         ControllerMock(described_class).new({}, 'Service-Ticket' => 'le ticket')
       end
 
-      it 'should send the ticket to validation' do
+      it 'sends the ticket to validation' do
         controller.validate_authentication_ticket
-        expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+
+        expect(Cassette::Authentication).to have_received(:validate_ticket)
+          .with('le ticket', Cassette.config.service)
       end
     end
   end
