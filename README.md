@@ -69,6 +69,9 @@ class ApiController < ApplicationController
 
     # or maybe a hardcoded:
     # "api.example.org"
+
+    # looking like regular RubyCAS, using the url
+    # request.url
   end
 end
 ```
