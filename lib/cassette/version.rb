@@ -2,13 +2,10 @@ module Cassette
   class Version
     MAJOR = '1'
     MINOR = '0'
-
-    def self.build_number
-      ENV['BUILD_NUMBER'] || 2
-    end
+    PATCH = '16'
 
     def self.version
-      [MAJOR, MINOR, build_number].join('.')
+      [MAJOR, MINOR, PATCH].join('.')
     end
   end
 end
