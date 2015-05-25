@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-require 'spec_helper'
-
 RSpec.describe 'Cassette::Client, Cassette::Authentication integration' do
   shared_examples_for 'a Cassette client and validator' do
     let(:config) { fail 'implement config!' }

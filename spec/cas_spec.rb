@@ -1,4 +1,4 @@
-require 'spec_helper'
+
 
 describe Cassette do
   let(:uri) { 'http://example.org/' }

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'spec_helper'
+
 
 describe Cassette::Authentication::Filter do
   before do

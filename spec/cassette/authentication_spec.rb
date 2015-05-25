@@ -1,6 +1,4 @@
 # encoding: utf-8
-require 'spec_helper'
-
 describe Cassette::Authentication do
   let(:cache) { instance_double(Cassette::Authentication::Cache) }
   let(:http)  { class_double(Cassette) }
