@@ -6,8 +6,8 @@ module Cassette
   module Cache
     def backend
       @backend ||= begin
-        if defined?(Rails) && Rails.cache
-          Rails.cache
+        if defined?(::Rails) && ::Rails.cache
+          ::Rails.cache
         else
           ActiveSupport::Cache::MemoryStore.new
         end

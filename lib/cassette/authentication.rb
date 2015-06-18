@@ -3,8 +3,8 @@
 module Cassette
   class Authentication
     def self.method_missing(name, *args)
-      @@default_authentication ||= new
-      @@default_authentication.send(name, *args)
+      @default_authentication ||= new
+      @default_authentication.send(name, *args)
     end
 
     def initialize(opts = {})
@@ -45,7 +45,7 @@ module Cassette
           ) if ticket_response.login
         rescue => exception
           logger.error "Error while authenticating ticket #{ticket}: #{exception.message}"
-          raise Cassette::Errors::Forbidden.new(exception.message)
+          raise Cassette::Errors::Forbidden, exception.message
         end
       end
     end
@@ -53,6 +53,29 @@ module Cassette
     protected
 
     attr_accessor :cache, :logger, :http, :config
+
+    def try_content(node, *keys)
+      keys.inject(node) do |a, e|
+        a.try(:[], e)
+      end.try(:[], '__content__')
+    end
+
+    def extract_user(xml, ticket)
+      ActiveSupport::XmlMini.with_backend('LibXML') do
+        result = ActiveSupport::XmlMini.parse(xml)
+
+        login = try_content(result, 'serviceResponse', 'authenticationSuccess', 'user')
+
+        if login
+          attributes = result['serviceResponse']['authenticationSuccess']['attributes']
+          name = try_content(attributes, 'cn')
+          authorities = try_content(attributes, 'authorities')
+
+          Cassette::Authentication::User.new(login: login, name: name, authorities: authorities,
+                                             ticket: ticket, config: config)
+        end
+      end
+    end
 
     def validate_uri
       "#{config.base.gsub(/\/?$/, '')}/serviceValidate"

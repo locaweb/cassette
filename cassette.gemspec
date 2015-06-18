@@ -13,6 +13,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'activesupport', '> 3.1.0'
 
   gem.add_development_dependency 'rspec', '~> 3.0'
+  gem.add_development_dependency 'rspec-its'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'rubycas-client'
@@ -22,6 +23,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov-gem-adapter'
   gem.add_development_dependency 'rspec_junit_formatter'
   gem.add_development_dependency 'webmock'
+  gem.add_development_dependency 'faker'
 
   gem.files         = %w(README.md) + Dir['lib/**/*'] + Dir['spec/**/*']
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }

@@ -3,8 +3,8 @@
 module Cassette
   class Client
     def self.method_missing(name, *args)
-      @@default_client ||= new
-      @@default_client.send(name, *args)
+      @default_client ||= new
+      @default_client.send(name, *args)
     end
 
     def initialize(opts = {})

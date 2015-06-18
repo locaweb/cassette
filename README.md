@@ -152,6 +152,26 @@ class SomeController < ApplicationController
 end
 ```
 
+### Constraining routes for roles
+
+This is useful if you want to mount an unauthenticated Rack app (like Resque)
+
+Add to your `config/routes.rb`:
+
+```ruby
+  mount Resque::Server.new, at: '/resque', constraints: Cassette::Rubycas::RoutingConstraint.new(:admin)
+```
+
+This will make your /resque route require your `BASEAUTHORITY_ADMIN` role.
+
+You can also use raw roles:
+
+```ruby
+  mount Resque::Server.new, at: '/resque', constraints: Cassette::Rubycas::RoutingConstraint.new('OTHERAPP_ROLE', raw: true)
+```
+
+And your /resque route will require the `OTHERAPP_ROLE` role.
+
 ## Instantiating Cassette::Client and Cassette::Authentication
 
 You can create your own instances of `Cassette::Client` (st/tgt generator) and `Cassette::Authentication` (st validator).
