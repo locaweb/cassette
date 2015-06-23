@@ -55,7 +55,7 @@ If you wish to have actions that skip the authentication filter, add to your con
 ```ruby
 class SomeController < ApplicationController
     skip_authentication # [*options]
-    
+
     # skip_authentication only: "index"
 end
 ```
@@ -104,6 +104,17 @@ The constructor accepts a hash with keys (as symbols) for the values of cache, l
 All values default to the same values used when accessing the class methods directly.
 
 Please check the constructors or integration specs for details.
+
+## About caching and tests
+
+It is a good idea to always clear the cache between tests, specially if you're
+using VCR. You can do it by using the invoking the `#clear` method of the cache
+backend in use. The following excerpt will clear the cache of the default client
+`Cassette::Client` instance:
+
+```
+Cassette::Client.cache.backend.clear
+```
 
 ## Contributing
 
