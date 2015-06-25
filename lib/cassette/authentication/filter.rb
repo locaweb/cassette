@@ -20,7 +20,7 @@ module Cassette::Authentication::Filter
   def validate_authentication_ticket(service = Cassette.config.service)
     ticket = request.headers['Service-Ticket'] || params[:ticket]
 
-    if ENV['NOAUTH'] && !ticket
+    if ENV['NOAUTH']
       Cassette.logger.debug 'NOAUTH set and no Service Ticket, skipping authentication'
       self.current_user = Cassette::Authentication::User.new
       return
