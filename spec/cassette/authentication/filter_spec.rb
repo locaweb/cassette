@@ -97,20 +97,25 @@ describe Cassette::Authentication::Filter do
     end
   end
 
+
   describe '#validate_authentication_ticket' do
+    shared_examples_for 'controller without authentication' do
+      it 'does not validate tickets' do
+        controller.validate_authentication_ticket
+        expect(Cassette::Authentication).not_to have_received(:validate_ticket)
+      end
+
+      it 'sets current_user' do
+        controller.validate_authentication_ticket
+        expect(controller.current_user).to be_present
+      end
+    end
+
     it_behaves_like 'with NOAUTH' do
       context 'and no ticket' do
         let(:controller) { ControllerMock.new }
 
-        it 'should not validate tickets' do
-          controller.validate_authentication_ticket
-          expect(Cassette::Authentication).not_to have_received(:validate_ticket)
-        end
-
-        it 'should set current_user' do
-          controller.validate_authentication_ticket
-          expect(controller.current_user).to be_present
-        end
+        it_behaves_like 'controller without authentication'
       end
 
       context 'and a ticket header' do
@@ -118,10 +123,7 @@ describe Cassette::Authentication::Filter do
           ControllerMock.new({}, 'Service-Ticket' => 'le ticket')
         end
 
-        it 'should validate tickets' do
-          controller.validate_authentication_ticket
-          expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
-        end
+        it_behaves_like 'controller without authentication'
       end
 
       context 'and a ticket param' do
@@ -129,10 +131,7 @@ describe Cassette::Authentication::Filter do
           ControllerMock.new(ticket: 'le ticket')
         end
 
-        it 'should validate tickets' do
-          controller.validate_authentication_ticket
-          expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
-        end
+        it_behaves_like 'controller without authentication'
       end
     end
 
