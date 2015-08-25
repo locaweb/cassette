@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cassette (1.0.17)
+    cassette (1.0.18)
       activesupport (> 3.1.0)
       faraday (> 0.9)
       libxml-ruby
