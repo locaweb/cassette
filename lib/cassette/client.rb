@@ -46,13 +46,13 @@ module Cassette
 
     attr_accessor :cache, :logger, :http, :config
 
-    def st_with_retry(user, pass, service, retrying = true)
+    def st_with_retry(user, pass, service, retrying = false)
       st(tgt(user, pass, retrying), service)
     rescue Cassette::Errors::NotFound => e
-      raise e unless retrying
+      raise e if retrying
 
       logger.info 'Got 404 response, regenerating TGT'
-      retrying = false
+      retrying = true
       retry
     end
 
