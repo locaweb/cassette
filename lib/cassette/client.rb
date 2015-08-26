@@ -28,9 +28,10 @@ module Cassette
       end
     end
 
-    def st(tgt, service, force = false)
+    def st(tgt_param, service, force = false)
       logger.info "Requesting ST for #{service}"
       cache.fetch_st(service, force: force) do
+        tgt = tgt_param.respond_to?(:call) ? tgt_param[] : tgt_param
         response = http.post("#{tickets_uri}/#{tgt}", service: service)
         response.body.tap do |st|
           logger.info "ST is #{st}"
@@ -47,7 +48,7 @@ module Cassette
     attr_accessor :cache, :logger, :http, :config
 
     def st_with_retry(user, pass, service, retrying = false)
-      st(tgt(user, pass, retrying), service)
+      st(->{ tgt(user, pass, retrying) }, service)
     rescue Cassette::Errors::NotFound => e
       raise e if retrying
 

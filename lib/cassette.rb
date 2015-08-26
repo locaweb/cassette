@@ -49,15 +49,8 @@ module Cassette
     end
   end
 
-  def get(uri, payload, timeout = DEFAULT_TIMEOUT)
-    perform(:get, uri, payload, timeout) do |req|
-      req.params = payload
-      logger.debug "Request: #{req.inspect}"
-    end
-  end
-
   def post(uri, payload, timeout = DEFAULT_TIMEOUT)
-    perform(:post, uri, payload, timeout) do |req|
+    perform(:post, uri, timeout) do |req|
       req.body = URI.encode_www_form(payload)
       logger.debug "Request: #{req.inspect}"
     end
@@ -65,7 +58,7 @@ module Cassette
 
   protected
 
-  def perform(op, uri, _payload, timeout = DEFAULT_TIMEOUT, &block)
+  def perform(op, uri, timeout = DEFAULT_TIMEOUT, &block)
     request = new_request(uri, timeout)
     res = request.send(op, &block)
 
