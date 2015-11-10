@@ -22,7 +22,7 @@ module Cassette
       fail Cassette::Errors::AuthorizationRequired if ticket.nil? || ticket.blank?
 
       user = ticket_user(ticket, service)
-      logger.info "Cassette::Authentication user: #{user.inspect}"
+      logger.debug "Cassette::Authentication user: #{user.inspect}"
 
       fail Cassette::Errors::Forbidden unless user
 
@@ -35,7 +35,7 @@ module Cassette
           logger.info("Validating #{ticket} on #{validate_uri}")
           response = http.post(validate_uri, ticket: ticket, service: service).body
 
-          logger.info("Validation resut: #{response.inspect}")
+          logger.debug("Validation resut: #{response.inspect}")
 
           user = nil
 
