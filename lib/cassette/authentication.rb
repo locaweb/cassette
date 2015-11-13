@@ -1,8 +1,5 @@
 # encoding: UTF-8
 
-require 'active_support/xml_mini'
-ActiveSupport::XmlMini.backend = 'LibXML'
-
 module Cassette
   class Authentication
     def self.method_missing(name, *args)
@@ -13,13 +10,13 @@ module Cassette
     def initialize(opts = {})
       self.config = opts.fetch(:config, Cassette.config)
       self.logger = opts.fetch(:logger, Cassette.logger)
-      self.http   = opts.fetch(:http_client, Cassette)
+      self.http   = opts.fetch(:http_client, Cassette::Http)
       self.cache  = opts.fetch(:cache, Cassette::Authentication::Cache.new(logger))
     end
 
     def validate_ticket(ticket, service = config.service)
       logger.debug "Cassette::Authentication validating ticket: #{ticket}"
-      fail Cassette::Errors::AuthorizationRequired if ticket.nil? || ticket.blank?
+      fail Cassette::Errors::AuthorizationRequired if ticket.blank?
 
       user = ticket_user(ticket, service)
       logger.info "Cassette::Authentication user: #{user.inspect}"
@@ -33,27 +30,19 @@ module Cassette
       cache.fetch_authentication(ticket) do
         begin
           logger.info("Validating #{ticket} on #{validate_uri}")
+
           response = http.post(validate_uri, ticket: ticket, service: service).body
+          ticket_response = Http::TicketResponse.new(response)
 
           logger.info("Validation resut: #{response.inspect}")
 
-          user = nil
-
-          ActiveSupport::XmlMini.with_backend('LibXML') do
-            result = ActiveSupport::XmlMini.parse(response)
-
-            login = result.try(:[], 'serviceResponse').try(:[], 'authenticationSuccess').try(:[], 'user').try(:[], '__content__')
-
-            if login
-              attributes = result['serviceResponse']['authenticationSuccess']['attributes']
-              name = attributes.try(:[], 'cn').try(:[], '__content__')
-              authorities = attributes.try(:[], 'authorities').try(:[], '__content__')
-
-              user = Cassette::Authentication::User.new(login: login, name: name, authorities: authorities, ticket: ticket, config: config)
-            end
-          end
-
-          user
+          Cassette::Authentication::User.new(
+            login: ticket_response.login,
+            name: ticket_response.name,
+            authorities: ticket_response.authorities,
+            ticket: ticket,
+            config: config
+          ) if ticket_response.login
         rescue => exception
           logger.error "Error while authenticating ticket #{ticket}: #{exception.message}"
           raise Cassette::Errors::Forbidden.new(exception.message)
