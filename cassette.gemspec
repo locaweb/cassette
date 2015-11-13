@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov-rcov'
   gem.add_development_dependency 'simplecov-gem-adapter'
   gem.add_development_dependency 'rspec_junit_formatter'
+  gem.add_development_dependency 'webmock'
 
   gem.files         = %w(README.md) + Dir['lib/**/*'] + Dir['spec/**/*']
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }

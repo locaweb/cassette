@@ -2,6 +2,7 @@ require 'simplecov'
 require 'simplecov-rcov'
 require 'simplecov-gem-adapter'
 require 'yaml'
+require 'webmock/rspec'
 
 module Fixtures
   def fixture(name)
