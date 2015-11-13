@@ -2,6 +2,7 @@
 
 require 'cassette/errors'
 require 'cassette/cache'
+require 'cassette/http'
 require 'cassette/client/cache'
 require 'cassette/client'
 require 'cassette/authentication'
