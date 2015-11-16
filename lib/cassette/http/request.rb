@@ -26,7 +26,7 @@ module Cassette
       end
 
       def log_request
-        -> (request) { Cassette.logger.debug "Request: #{request.inspect}" }
+        lambda { |request| Cassette.logger.debug "Request: #{request.inspect}" }
       end
 
       def check_response

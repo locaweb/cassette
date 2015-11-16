@@ -32,7 +32,7 @@ module Cassette
       end
 
       def access_key
-        -> (hash, key) { hash.try(:[], key) }
+        lambda { |hash, key| hash.try(:[], key) }
       end
 
       def attributes
