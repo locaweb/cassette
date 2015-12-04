@@ -68,7 +68,7 @@ Where options are the same options you can pass to Rails' __skip_before_filter__
 If you are authenticating users with RubyCAS and want role checking, in your rubycas initializer:
 
 ```ruby
-require "cas/rubycas"
+require "cassette/rubycas"
 ```
 
 And in your ApplicationController (or any authenticated controller):
