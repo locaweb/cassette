@@ -6,6 +6,7 @@ module Cassette
   module Rubycas
     module Helper
       extend ActiveSupport::Concern
+      extend UserFactory
 
       included do
         before_filter :validate_authentication_ticket
@@ -60,14 +61,7 @@ module Cassette
         return fake_user if ENV['NOAUTH']
         return nil unless session[:cas_user]
 
-        @current_user ||= begin
-          attributes = session[:cas_extra_attributes]
-          Cassette::Authentication::User.new(login: session[:cas_user],
-                                             name: attributes.try(:[], :cn),
-                                             email: attributes.try(:[], :email),
-                                             authorities: attributes.try(:[], :authorities),
-                                             type: attributes.try(:[], :type).try(:downcase))
-        end
+        @current_user ||= from_session(session)
       end
     end
   end

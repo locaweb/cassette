@@ -20,13 +20,14 @@ describe Cassette::Authentication::User do
         expect(config).to receive(:base_authority).and_return('TESTAPI')
         expect(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', 'TESTAPI')
 
-        Cassette::Authentication::User.new(login: 'john.doe', name: 'John Doe', authorities: '[CUSTOMERAPI, SAPI]', config: config)
+        Cassette::Authentication::User.new(login: 'john.doe', name: 'John Doe',
+                                           authorities: '[CUSTOMERAPI, SAPI]', config: config)
       end
     end
   end
 
   describe '#has_role?' do
-    let (:user) do
+    let(:user) do
       Cassette::Authentication::User.new(login: 'john.doe', name: 'John Doe',
                                          authorities: "[#{base_authority}, SAPI, #{base_authority}_CREATE-USER]")
     end

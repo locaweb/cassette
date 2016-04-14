@@ -3,6 +3,8 @@ require 'simplecov-rcov'
 require 'simplecov-gem-adapter'
 require 'yaml'
 require 'webmock/rspec'
+require 'rspec/its'
+require 'faker'
 
 Dir['spec/support/**/*.rb'].each { |f| load f }
 
