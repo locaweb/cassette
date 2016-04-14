@@ -1,0 +1,22 @@
+# Change Log
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [Unreleased]
+
+## [1.1.0] - 2016-04-14
+### Added
+- added support to allow multiple services (see README and #10)
+- added a role-checking routing contraint (see README and #7)
+
+### Changed
+- a lot more specs
+- better separation of concerns, see #14
+
+## [1.0.18] - 2015-08-25
+### Fixed
+- Fixed a bug regarding TGT caching, see #11
+
+## [1.0.17] - 2015-06-26
+
+Initial release.
