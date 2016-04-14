@@ -1,4 +1,4 @@
-require 'spec_helper'
+
 
 describe Cassette::Authentication::User do
   let(:base_authority) do

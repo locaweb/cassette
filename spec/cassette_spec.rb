@@ -1,4 +1,4 @@
-require 'spec_helper'
+
 
 describe Cassette do
   def keeping_logger(&block)

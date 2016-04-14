@@ -1,27 +1,39 @@
 # encoding: utf-8
-
-require 'spec_helper'
-
 describe Cassette::Authentication do
   let(:cache) { instance_double(Cassette::Authentication::Cache) }
   let(:http)  { class_double(Cassette) }
 
-  subject do
+  subject(:authentication) do
     Cassette::Authentication.new(cache: cache, http_client: http)
   end
 
   describe '#ticket_user' do
-    context 'when cached' do
-      it 'returns the cached value when cached' do
-        cached = double('cached')
+    subject(:ticket_user) { authentication.ticket_user(ticket) }
 
-        expect(cache).to receive(:fetch_authentication) do |ticket, &block|
-          expect(ticket).to eql('ticket')
+    let(:ticket) { 'ticket' }
+    let(:cached_value) { 'cached_value' }
+    let(:service) { 'test-api.example.org' }
+
+    context 'when cached' do
+      before do
+        allow(cache).to receive(:fetch_authentication)
+          .and_return(cached_value)
+      end
+
+      it { is_expected.to eql(cached_value) }
+      it 'calls Cache#fetch_authentication with ticket and service' do
+        expect(cache).to receive(:fetch_authentication)
+          .with(ticket, service)
+
+        ticket_user
+      end
+
+      it 'passes a block to Cache#fetch_authentication' do
+        expect(cache).to receive(:fetch_authentication) do |*, &block|
           expect(block).to be_present
-          cached
         end
 
-        expect(subject.ticket_user('ticket')).to eql(cached)
+        ticket_user
       end
     end
 
@@ -44,7 +56,7 @@ describe Cassette::Authentication do
         end
 
         it 'returns nil' do
-          expect(subject.ticket_user('ticket')).to be_nil
+          expect(ticket_user).to be_nil
         end
       end
 
@@ -55,7 +67,7 @@ describe Cassette::Authentication do
         end
 
         it 'returns an User' do
-          expect(subject.ticket_user('ticket')).to be_instance_of(Cassette::Authentication::User)
+          expect(ticket_user).to be_instance_of(Cassette::Authentication::User)
         end
       end
     end

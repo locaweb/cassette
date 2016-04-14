@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require 'spec_helper'
+
 
 describe Cassette::Errors do
   describe Cassette::Errors::Base do
