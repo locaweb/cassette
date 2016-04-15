@@ -2,7 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.1.1] - 2016-04-15
+### Fixed
+- Fixed a `NoMethodError` caused by refactoring
 
 ## [1.1.0] - 2016-04-14
 ### Added
