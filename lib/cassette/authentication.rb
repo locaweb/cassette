@@ -10,7 +10,7 @@ module Cassette
     def initialize(opts = {})
       self.config = opts.fetch(:config, Cassette.config)
       self.logger = opts.fetch(:logger, Cassette.logger)
-      self.http   = opts.fetch(:http_client, Cassette::Http)
+      self.http   = opts.fetch(:http_client, Cassette::Http::Request)
       self.cache  = opts.fetch(:cache, Cassette::Authentication::Cache.new(logger))
     end
 
