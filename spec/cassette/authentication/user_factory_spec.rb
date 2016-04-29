@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Cassette::Rubycas::UserFactory do
   let(:mod) do
     Module.new do
-      extend Cassette::Rubycas::UserFactory
+      include Cassette::Rubycas::UserFactory
       extend self
     end
   end

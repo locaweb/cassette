@@ -1,6 +1,8 @@
 module Cassette
   module Rubycas
     module UserFactory
+      extend ActiveSupport::Concern
+
       def from_session(session)
         attributes = session[:cas_extra_attributes]
         Cassette::Authentication::User.new(login: session[:cas_user],

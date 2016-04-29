@@ -6,7 +6,7 @@ module Cassette
   module Rubycas
     module Helper
       extend ActiveSupport::Concern
-      extend UserFactory
+      include UserFactory
 
       included do
         before_filter :validate_authentication_ticket
