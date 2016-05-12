@@ -2,9 +2,10 @@ describe Cassette::Http::Request do
   subject(:request) { described_class }
 
   describe '.post' do
-    subject(:post) { request.post(uri, payload) }
+    subject(:post) { request.post(path, payload) }
 
-    let(:uri) { 'http://example.org/' }
+    let(:uri) { "#{Cassette.config.base}#{path}" }
+    let(:path) { "/something" }
     let(:payload) { { ping: :pong } }
     let(:response) do
       {

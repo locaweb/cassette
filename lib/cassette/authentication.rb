@@ -10,7 +10,7 @@ module Cassette
     def initialize(opts = {})
       self.config = opts.fetch(:config, Cassette.config)
       self.logger = opts.fetch(:logger, Cassette.logger)
-      self.http   = opts.fetch(:http_client, Cassette::Http::Request)
+      self.http   = opts.fetch(:http_client, Cassette::Http::Request.new(config))
       self.cache  = opts.fetch(:cache, Cassette::Authentication::Cache.new(logger))
     end
 
@@ -29,9 +29,9 @@ module Cassette
     def ticket_user(ticket, service = config.service)
       cache.fetch_authentication(ticket, service) do
         begin
-          logger.info("Validating #{ticket} on #{validate_uri}")
+          logger.info("Validating #{ticket} on #{validate_path}")
 
-          response = http.post(validate_uri, ticket: ticket, service: service).body
+          response = http.post(validate_path, ticket: ticket, service: service).body
           ticket_response = Http::TicketResponse.new(response)
 
           logger.info("Validation resut: #{response.inspect}")
@@ -77,8 +77,8 @@ module Cassette
       end
     end
 
-    def validate_uri
-      "#{config.base.gsub(/\/?$/, '')}/serviceValidate"
+    def validate_path
+      "/serviceValidate"
     end
   end
 end
