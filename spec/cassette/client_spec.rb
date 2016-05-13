@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Cassette::Client do
-  let(:http) { class_double(Cassette) }
+  let(:http) { instance_double(Cassette::Http::Request) }
   let(:cache) { instance_double(Cassette::Client::Cache) }
   let(:options) do
     {

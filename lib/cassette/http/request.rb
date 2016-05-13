@@ -1,27 +1,36 @@
 module Cassette
   module Http
-    module Request
-      extend self
+    class Request
+      def self.method_missing(name, *args)
+        @default_http ||= new
+        @default_http.send(name, *args)
+      end
 
-      def post(uri, payload, timeout = DEFAULT_TIMEOUT)
-        perform(:post, uri, timeout) do |request|
-          request.body = URI.encode_www_form(payload)
+      def initialize(config = Cassette.config)
+        self.config = config
+      end
+
+      def post(path, payload, timeout = DEFAULT_TIMEOUT)
+        perform(:post, path) do |req|
+          req.body = URI.encode_www_form(payload)
+          req.options.timeout = timeout
         end
       end
 
       private
 
-      def perform(http_verb, uri, timeout, &block)
-        request(uri, timeout)
+      attr_accessor :config
+
+      def perform(http_verb, path, &block)
+        request
           .tap(&log_request)
-          .public_send(http_verb, &block)
+          .public_send(http_verb, path, &block)
           .tap(&check_response)
       end
 
-      def request(uri, timeout)
-        Faraday.new(url: uri, ssl: { verify: false, version: 'TLSv1' }) do |con|
-          con.adapter Faraday.default_adapter
-          con.options.timeout = timeout
+      def request
+        @request ||= Faraday.new(url: config.base, ssl: { verify: false, version: 'TLSv1' }) do |conn|
+          conn.adapter Faraday.default_adapter
         end
       end
 

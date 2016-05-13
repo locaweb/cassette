@@ -10,7 +10,7 @@ module Cassette
     def initialize(opts = {})
       self.config = opts.fetch(:config, Cassette.config)
       self.logger = opts.fetch(:logger, Cassette.logger)
-      self.http   = opts.fetch(:http_client, Cassette)
+      self.http   = opts.fetch(:http_client, Cassette::Http::Request.new(config))
       self.cache  = opts.fetch(:cache, Cassette::Client::Cache.new(logger))
     end
 
@@ -21,7 +21,7 @@ module Cassette
     def tgt(usr, pwd, force = false)
       logger.info 'Requesting TGT'
       cache.fetch_tgt(force: force) do
-        response = http.post(tickets_uri, username: usr, password: pwd)
+        response = http.post(tickets_path, username: usr, password: pwd)
         tgt = Regexp.last_match(1) if response.headers['Location'] =~ /tickets\/(.*)/
         logger.info "TGT is #{tgt}"
         tgt
@@ -32,7 +32,7 @@ module Cassette
       logger.info "Requesting ST for #{service}"
       cache.fetch_st(service, force: force) do
         tgt = tgt_param.respond_to?(:call) ? tgt_param[] : tgt_param
-        response = http.post("#{tickets_uri}/#{tgt}", service: service)
+        response = http.post("#{tickets_path}/#{tgt}", service: service)
         response.body.tap do |st|
           logger.info "ST is #{st}"
         end
@@ -57,8 +57,8 @@ module Cassette
       retry
     end
 
-    def tickets_uri
-      "#{config.base.gsub(/\/?$/, '')}/v1/tickets"
+    def tickets_path
+      "/v1/tickets"
     end
   end
 end

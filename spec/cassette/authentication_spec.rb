@@ -1,7 +1,7 @@
 # encoding: utf-8
 describe Cassette::Authentication do
   let(:cache) { instance_double(Cassette::Authentication::Cache) }
-  let(:http)  { class_double(Cassette) }
+  let(:http)  { instance_double(Cassette::Http::Request) }
 
   subject(:authentication) do
     Cassette::Authentication.new(cache: cache, http_client: http)
