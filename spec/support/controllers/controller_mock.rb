@@ -10,7 +10,7 @@ end
 
 class ControllerMock
   attr_accessor :params, :request, :current_user
-  def self.before_filter(*); end
+  def self.before_action(*); end
 
   def initialize(params = {}, headers = {})
     self.params = params.with_indifferent_access

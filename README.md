@@ -56,7 +56,7 @@ class SomeController < ApplicationController
 end
 ```
 
-Where options are the same options you can pass to Rails' `skip_before_filter` method.
+Where options are the same options you can pass to Rails' `skip_before_action` method.
 
 You also can skip the whole CAS authentication using an environment variable `NOAUTH=true`. The method `current_user` will keep available. This is useful for development environments. **Be careful not to set and/or forget this variable in production environment**.
 
@@ -139,7 +139,7 @@ class SomeController < ApplicationController
 
     # - Allow only employees:
     #
-    # before_filter :employee_only_filter
+    # before_action :employee_only_filter
     #
     # rescue_from Cassette::Errors::NotAnEmployee do
     #   redirect_to '/403.html'
@@ -147,7 +147,7 @@ class SomeController < ApplicationController
 
     # - Allow only customers:
     #
-    # before_filter :customer_only_filter
+    # before_action :customer_only_filter
     #
     # rescue_from Cassette::Errors::NotACustomer do
     #   redirect_to '/403.html'
