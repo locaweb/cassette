@@ -9,13 +9,13 @@ module Cassette
       include UserFactory
 
       included do
-        before_filter :validate_authentication_ticket
+        before_action :validate_authentication_ticket
         helper_method :current_user
       end
 
       module ClassMethods
         def skip_authentication(*options)
-          skip_before_filter :validate_authentication_ticket, *options
+          skip_before_action :validate_authentication_ticket, *options
         end
       end
 

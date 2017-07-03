@@ -9,13 +9,13 @@ module Cassette
       extend ActiveSupport::Concern
 
       included do |controller|
-        controller.before_filter(:validate_authentication_ticket)
+        controller.before_action(:validate_authentication_ticket)
         controller.send(:attr_accessor, :current_user)
       end
 
       module ClassMethods
         def skip_authentication(*options)
-          skip_before_filter :validate_authentication_ticket, *options
+          skip_before_action :validate_authentication_ticket, *options
         end
       end
 
