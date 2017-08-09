@@ -1,47 +1,30 @@
+require 'rexml/document'
+require 'rexml/xpath'
+
 module Cassette
   module Http
     class TicketResponse
+      attr_reader :login, :name, :authorities
+
       def initialize(response)
-        @content = ParsedResponse.new(response)
-      end
+        namespaces = { "cas" => "http://www.yale.edu/tp/cas" }
+        query = "//cas:serviceResponse/cas:authenticationSuccess/cas:user"
 
-      def login
-        fetch_val(
-          content,
-          'serviceResponse',
-          'authenticationSuccess',
-          'user',
-          '__content__'
-        )
-      end
+        document = REXML::Document.new(response)
+        element = REXML::XPath.first(document, query, namespaces)
+        @login = element.try(:text)
 
-      def name
-        fetch_val(attributes, 'cn', '__content__')
-      end
+        if @login
+          attributes_query =
+            "//cas:serviceResponse/cas:authenticationSuccess/cas:attributes"
+          attributes = Hash[REXML::XPath.
+            first(document, attributes_query, namespaces).
+            elements.
+            map { |e| [e.name, e.text] }]
 
-      def authorities
-        fetch_val(attributes, 'authorities', '__content__')
-      end
-
-      private
-
-      attr_reader :content
-
-      def fetch_val(hash, *keys)
-        keys.reduce(hash, &access_key)
-      end
-
-      def access_key
-        lambda { |hash, key| hash.try(:[], key) }
-      end
-
-      def attributes
-        fetch_val(
-          content,
-          'serviceResponse',
-          'authenticationSuccess',
-          'attributes'
-        )
+          @name = attributes['cn']
+          @authorities = attributes['authorities']
+        end
       end
     end
   end

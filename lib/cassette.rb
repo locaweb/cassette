@@ -12,9 +12,11 @@ require 'cassette/authentication/cache'
 require 'cassette/authentication/filter'
 
 require 'faraday'
+require 'forwardable'
 require 'logger'
 
 module Cassette
+  extend Forwardable
   extend self
 
   attr_writer :config, :logger
@@ -35,5 +37,5 @@ module Cassette
     @config if defined?(@config)
   end
 
-  delegate :post, to: :'Http::Request'
+  def_delegators Http::Request, :post
 end

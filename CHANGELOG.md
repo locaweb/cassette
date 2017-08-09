@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Changed
+- Remove runtime dependency on active_support
+- Remove runtime dependency on libxml-ruby (native)
+
 ## [1.1.4] - 2017-07-03
 ### Fixed
 - Fixed deprecated method before_filter for Rails 5 applications

@@ -1,14 +1,12 @@
 # encoding: UTF-8
 
-require 'active_support/concern'
 require 'cassette/authentication/user'
 
 module Cassette
   class Authentication
     module Filter
-      extend ActiveSupport::Concern
-
-      included do |controller|
+      def self.included(controller)
+        controller.extend(ClassMethods)
         controller.before_action(:validate_authentication_ticket)
         controller.send(:attr_accessor, :current_user)
       end
