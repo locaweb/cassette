@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cassette (1.2.0.pre)
+    cassette (1.2.0)
       faraday (> 0.9)
 
 GEM
