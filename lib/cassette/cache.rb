@@ -1,6 +1,10 @@
 # encoding: UTF-8
 
-require 'active_support/cache'
+begin
+  require 'active_support/cache'
+rescue LoadError
+  require 'cassette/cache/null_store'
+end
 
 module Cassette
   module Cache
@@ -8,8 +12,10 @@ module Cassette
       @backend ||= begin
         if defined?(::Rails) && ::Rails.cache
           ::Rails.cache
-        else
+        elsif defined?(::ActiveSupport::Cache::MemoryStore)
           ActiveSupport::Cache::MemoryStore.new
+        else
+          NullStore.new
         end
       end
     end

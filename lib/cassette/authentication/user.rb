@@ -2,13 +2,15 @@
 
 require 'cassette/authentication'
 require 'cassette/authentication/authorities'
-require 'delegate'
+require 'forwardable'
 
 module Cassette
   class Authentication
     class User
+      extend Forwardable
+
       attr_accessor :login, :name, :authorities, :email, :ticket, :type
-      delegate :has_role?, :has_raw_role?, to: :@authorities
+      def_delegators :@authorities, :has_role?, :has_raw_role?
 
       def initialize(attrs = {})
         config       = attrs[:config]

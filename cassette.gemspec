@@ -9,9 +9,8 @@ Gem::Specification.new do |gem|
   gem.homepage      = 'http://github.com/locaweb/cassette'
 
   gem.add_runtime_dependency 'faraday', '> 0.9'
-  gem.add_runtime_dependency 'libxml-ruby'
-  gem.add_runtime_dependency 'activesupport', '> 3.1.0'
 
+  gem.add_development_dependency 'activesupport', '> 3.1.0'
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'rspec-its'
   gem.add_development_dependency 'rake'
