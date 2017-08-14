@@ -1,5 +1,9 @@
 # Cassette::Client
 
+[![Build Status](https://travis-ci.org/locaweb/cassette.svg)](https://travis-ci.org/locaweb/cassette) 
+
+[![Test Coverage](https://codeclimate.com/github/locaweb/cassette/badges/coverage.svg)](https://codeclimate.com/github/locaweb/cassette/coverage)
+
 Library to generate and validate STs and TGTs
 
 ## Installation

@@ -3,3 +3,7 @@ LineLength:
 
 Style/Documentation:
   Enabled: false
+
+AllCops:
+  Exclude:
+    - 'cassette.gemspec'
