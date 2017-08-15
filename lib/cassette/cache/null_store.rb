@@ -10,7 +10,7 @@ module Cassette
       def clear
       end
 
-      def read(_key, _options)
+      def read(_key, _options = {})
         nil
       end
 
@@ -18,15 +18,15 @@ module Cassette
         true
       end
 
-      def write(_key, _value, _options)
+      def write(_key, _value, _options = {})
         true
       end
 
-      def increment(_key)
+      def increment(_key, _by = 1, _options = {})
         0
       end
 
-      def fetch(_key, _options, &block)
+      def fetch(_key, _options = {}, &block)
         block.call
       end
     end
