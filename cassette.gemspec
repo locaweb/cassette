@@ -11,6 +11,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'faraday', '> 0.9'
 
   gem.add_development_dependency 'activesupport', '> 3.1.0'
+  gem.add_development_dependency 'json', '> 1.8.5'
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'rspec-its'
   gem.add_development_dependency 'rake'
@@ -20,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rubocop'
   gem.add_development_dependency 'simplecov-rcov'
   gem.add_development_dependency 'simplecov-gem-adapter'
+  gem.add_development_dependency 'codeclimate-test-reporter', '~> 1.0.0'
   gem.add_development_dependency 'rspec_junit_formatter'
   gem.add_development_dependency 'webmock'
   gem.add_development_dependency 'faker'
