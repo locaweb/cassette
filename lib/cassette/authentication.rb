@@ -31,7 +31,7 @@ module Cassette
         begin
           logger.info("Validating #{ticket} on #{validate_path}")
 
-          response = http.post(validate_path, ticket: ticket, service: service).body
+          response = http.get(validate_path, ticket: ticket, service: service).body
           ticket_response = Http::TicketResponse.new(response)
 
           logger.info("Validation resut: #{response.inspect}")

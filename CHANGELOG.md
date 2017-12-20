@@ -1,6 +1,10 @@
 # Change Log
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [1.2.1] - 2017-12-20
+### Changed
+- ST validation requests http method has been changed from POST to GET
 
 ## [1.2.0] - 2017-08-10
 ### Changed

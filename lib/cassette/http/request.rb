@@ -17,6 +17,13 @@ module Cassette
         end
       end
 
+      def get(path, payload, timeout = DEFAULT_TIMEOUT)
+        perform(:get, path) do |req|
+          req.params = payload
+          req.options.timeout = timeout
+        end
+      end
+
       private
 
       attr_accessor :config
