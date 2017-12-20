@@ -45,13 +45,13 @@ describe Cassette::Authentication do
       end
 
       it 'raises a Forbidden exception on any exceptions' do
-        allow(http).to receive(:post).with(anything, anything).and_raise(Cassette::Errors::BadRequest)
+        allow(http).to receive(:get).with(anything, anything).and_raise(Cassette::Errors::BadRequest)
         expect { subject.ticket_user('ticket') }.to raise_error(Cassette::Errors::Forbidden)
       end
 
       context 'with a failed CAS response' do
         before do
-          allow(http).to receive(:post).with(anything, anything)
+          allow(http).to receive(:get).with(anything, anything)
             .and_return(OpenStruct.new(body: fixture('cas/fail.xml')))
         end
 
@@ -62,7 +62,7 @@ describe Cassette::Authentication do
 
       context 'with a successful CAS response' do
         before do
-          allow(http).to receive(:post).with(anything, anything)
+          allow(http).to receive(:get).with(anything, anything)
             .and_return(OpenStruct.new(body: fixture('cas/success.xml')))
         end
 
