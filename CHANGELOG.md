@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - ST validation requests http method has been changed from POST to GET
 
+## [1.1.5] - 2017-12-20
+### Changed
+- ST validation requests http method has been changed from POST to GET
+
 ## [1.2.0] - 2017-08-10
 ### Changed
 - Remove runtime dependency on active_support
