@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+gemspec
+
+gem 'rubocop', '~> 0.41.0'
+gem 'faker', '~> 1.6.0'
+gem 'rake', '< 12.0.0'
+gem 'public_suffix', '~> 1.4.0'
+gem 'activesupport', '< 5'
+gem 'webmock', '< 3'

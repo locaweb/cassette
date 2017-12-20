@@ -22,7 +22,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov-rcov'
   gem.add_development_dependency 'simplecov-gem-adapter'
   gem.add_development_dependency 'codeclimate-test-reporter', '~> 1.0.0'
-  gem.add_development_dependency 'rspec_junit_formatter'
   gem.add_development_dependency 'webmock'
   gem.add_development_dependency 'faker'
 
