@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require 'cassette/errors'
-
 module Cassette
   module Errors
     class NotACustomer < Cassette::Errors::Base
