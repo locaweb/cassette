@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2018-01-15
+### Fixed
+- Circular reference load warning on errors
+
 ## [1.2.1] - 2017-12-20
 ### Changed
 - ST validation requests http method has been changed from POST to GET
