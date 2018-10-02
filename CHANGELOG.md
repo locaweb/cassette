@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## UNRELEASED
+### Fixed
+- Restore compatibility with Rails 3
+
 ## [1.2.2] - 2018-01-15
 ### Fixed
 - Circular reference load warning on errors

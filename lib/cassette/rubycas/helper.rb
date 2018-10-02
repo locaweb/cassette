@@ -8,14 +8,23 @@ module Cassette
       extend ActiveSupport::Concern
       include UserFactory
 
-      included do
-        before_action :validate_authentication_ticket
-        helper_method :current_user
+      included do |base|
+        if base.respond_to?(:before_action)
+          before_action :validate_authentication_ticket
+        else
+          before_filter :validate_authentication_ticket
+        end
+
+        base.helper_method :current_user
       end
 
       module ClassMethods
         def skip_authentication(*options)
-          skip_before_action :validate_authentication_ticket, *options
+          if respond_to?(:skip_before_action)
+            skip_before_action :validate_authentication_ticket, *options
+          else
+            skip_before_filter :validate_authentication_ticket, *options
+          end
         end
       end
 

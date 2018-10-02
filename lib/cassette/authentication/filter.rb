@@ -7,13 +7,21 @@ module Cassette
     module Filter
       def self.included(controller)
         controller.extend(ClassMethods)
-        controller.before_action(:validate_authentication_ticket)
+        if controller.respond_to?(:before_action)
+          controller.before_action(:validate_authentication_ticket)
+        else
+          controller.before_filter(:validate_authentication_ticket)
+        end
         controller.send(:attr_accessor, :current_user)
       end
 
       module ClassMethods
         def skip_authentication(*options)
-          skip_before_action :validate_authentication_ticket, *options
+          if respond_to?(:skip_before_action)
+            skip_before_action :validate_authentication_ticket, *options
+          else
+            skip_before_filter :validate_authentication_ticket, *options
+          end
         end
       end
 
