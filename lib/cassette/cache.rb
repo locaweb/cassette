@@ -8,7 +8,7 @@ end
 
 module Cassette
   module Cache
-    def backend
+    def self.backend
       @backend ||= begin
         if defined?(::Rails) && ::Rails.cache
           ::Rails.cache
@@ -18,6 +18,14 @@ module Cassette
           NullStore.new
         end
       end
+    end
+
+    def self.backend=(backend)
+      @backend = backend
+    end
+
+    def backend
+      @backend ||= Cassette::Cache.backend
     end
 
     attr_writer :backend
