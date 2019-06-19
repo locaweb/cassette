@@ -30,8 +30,9 @@ module Cassette
 
     def st(tgt_param, service, force = false)
       logger.info "Requesting ST for #{service}"
-      cache.fetch_st(service, force: force) do
-        tgt = tgt_param.respond_to?(:call) ? tgt_param[] : tgt_param
+      tgt = tgt_param.respond_to?(:call) ? tgt_param[] : tgt_param
+
+      cache.fetch_st(tgt, service, force: force) do
         response = http.post("#{tickets_path}/#{tgt}", service: service)
         response.body.tap do |st|
           logger.info "ST is #{st}"

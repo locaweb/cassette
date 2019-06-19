@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## UNRELEASED
+### Changed
+- ST caching now uses a hash of the TGT to avoid using `#delete_matched`
+
+### Fixed
+- Allow using memcached cache backends
+
 ## [1.2.4] - 2019-05-10
 ### Fixed
 - Make `Cassette::Cache.backend` assignable like the documentation says.

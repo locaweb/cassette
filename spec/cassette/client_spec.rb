@@ -160,7 +160,7 @@ describe Cassette::Client do
 
     context 'cache control' do
       before do
-        allow(cache).to receive(:fetch_st).with(service, hash_including(force: force))
+        allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: force))
           .and_return(st)
       end
 
@@ -170,7 +170,7 @@ describe Cassette::Client do
         it 'forwards force to the cache' do
           subject
 
-          expect(cache).to have_received(:fetch_st).with(service, hash_including(force: force))
+          expect(cache).to have_received(:fetch_st).with(tgt, service, hash_including(force: force))
         end
       end
 
@@ -198,7 +198,7 @@ describe Cassette::Client do
     context 'when tgt and st are not cached' do
       before do
         allow(cache).to receive(:fetch_tgt).with(hash_including(force: false)).and_yield
-        allow(cache).to receive(:fetch_st).with(service, hash_including(force: false)).and_yield
+        allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: false)).and_yield
 
         allow(http).to receive(:post)
           .with(%r{/v1/tickets\z}, username: Cassette.config.username, password: Cassette.config.password)
@@ -232,7 +232,7 @@ describe Cassette::Client do
     context 'when tgt is cached but st is not' do
       before do
         allow(cache).to receive(:fetch_tgt).with(hash_including(force: false)).and_return(tgt)
-        allow(cache).to receive(:fetch_st).with(service, hash_including(force: false)).and_yield
+        allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: false)).and_yield
 
         allow(http).to receive(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
           .and_return(st_response)
@@ -253,7 +253,8 @@ describe Cassette::Client do
 
     context 'when st is cached' do
       before do
-        allow(cache).to receive(:fetch_st).with(service, hash_including(force: false)).and_return(st)
+        allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: false)).and_return(st)
+        allow(cache).to receive(:fetch_tgt).and_return(tgt)
       end
 
       it 'returns the cached value' do
