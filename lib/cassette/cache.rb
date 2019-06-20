@@ -8,28 +8,6 @@ end
 
 module Cassette
   module Cache
-    def self.backend
-      @backend ||= begin
-        if defined?(::Rails) && ::Rails.cache
-          ::Rails.cache
-        elsif defined?(::ActiveSupport::Cache::MemoryStore)
-          ActiveSupport::Cache::MemoryStore.new
-        else
-          NullStore.new
-        end
-      end
-    end
-
-    def self.backend=(backend)
-      @backend = backend
-    end
-
-    def backend
-      @backend ||= Cassette::Cache.backend
-    end
-
-    attr_writer :backend
-
     def uses_key(key)
       "uses:#{key}"
     end
@@ -49,6 +27,14 @@ module Cassette
       end
 
       backend.fetch(key, options, &block)
+    end
+
+    def backend
+      Cassette.cache_backend
+    end
+
+    def self.backend=(backend)
+      ::Cassette.cache_backend = backend
     end
   end
 end

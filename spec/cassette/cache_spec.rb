@@ -5,62 +5,31 @@ describe Cassette::Cache do
     cached()
   end
 
-  after do
-    described_class.instance_variable_set(:@backend, nil)
-  end
+  describe '#backend' do
+    it 'returns the global cache' do
+      # setup
+      global_cache = double('cache_store')
+      Cassette.cache_backend = global_cache
 
-  describe '.backend' do
-    it 'defaults to rails backend' do
-      rails = double('Rails')
-      cache = double('cache_backend')
-      allow(rails).to receive(:cache).and_return(cache)
-      stub_const('Rails', rails)
+      # exercise and verify
+      expect(subject.backend).to eql(global_cache)
 
-      expect(described_class.backend).to eql(cache)
+      # tear down
+      Cassette.cache_backend = nil
     end
   end
 
   describe '.backend=' do
-    it 'provides a default backend for new instances' do
-      backend = double('backend')
-      expect(subject.backend).not_to eq(backend)
+    it 'sets the cache' do
+      # setup
+      global_cache = double('cache_store')
+      described_class.backend = global_cache
 
-      described_class.backend = backend
+      # exercise and verify
+      expect(subject.backend).to eql(global_cache)
 
-      new_instance = cached()
-      expect(new_instance.backend).to eq(backend)
-      expect(new_instance.backend).not_to eq(subject.backend)
-    end
-
-    it 'sets the default backend' do
-      backend = double('backend')
-      expect(described_class.backend).not_to eq(backend)
-
-      described_class.backend = backend
-
-      expect(described_class.backend).to eq(backend)
-    end
-  end
-
-  describe '#backend' do
-    before { subject.backend = nil }
-    after { subject.backend = nil }
-
-    it 'sets the backend' do
-      backend = double('Backend')
-
-      subject.backend = backend
-
-      expect(subject.backend).to eql(backend)
-    end
-
-    it 'defaults to rails backend' do
-      rails = double('Rails')
-      cache = double('cache_backend')
-      allow(rails).to receive(:cache).and_return(cache)
-      stub_const('Rails', rails)
-
-      expect(subject.backend).to eql(cache)
+      # tear down
+      Cassette.cache_backend = nil
     end
   end
 

@@ -33,4 +33,53 @@ describe Cassette do
       end
     end
   end
+
+  describe '.cache_backend' do
+    context 'when the cache_backend is already set' do
+      it 'returns the cache_backend set' do
+        new_cache = double('cache_backend')
+        described_class.cache_backend = new_cache
+
+        # exercise and verify
+        expect(described_class.cache_backend).to eq(new_cache)
+
+        # tear down
+        described_class.cache_backend = nil
+      end
+    end
+
+    context 'when the cache_backend is not set' do
+      it 'returns Rails.cache if set' do
+        rails_cache = double('cache')
+        rails = double('Rails')
+        allow(rails).to receive(:cache).and_return(rails_cache)
+        stub_const('Rails', rails)
+
+        # exercise and verify
+        expect(described_class.cache_backend).to eq(rails_cache)
+
+        # tear down
+        described_class.cache_backend = nil
+      end
+
+      it 'returns MemoryStore if Rails.cache not set' do
+        # exercise and verify
+        expect(described_class.cache_backend).to be_a(ActiveSupport::Cache::MemoryStore)
+
+        # tear down
+        described_class.cache_backend = nil
+      end
+
+      it 'returns NullStore if Rails.cache and MemoryStore are not set' do
+        hide_const('ActiveSupport::Cache::MemoryStore')
+        require 'cassette/cache/null_store'
+
+        # exercise and verify
+        expect(described_class.cache_backend).to be_a(Cassette::Cache::NullStore)
+
+        # tear down
+        described_class.cache_backend = nil
+      end
+    end
+  end
 end

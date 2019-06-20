@@ -40,5 +40,21 @@ describe Cassette::Authentication::Cache do
         it  { expect(call_with_other_service).to eq(2) }
       end
     end
+
+    it 'uses the cache store set in configuration' do
+      # setup
+      global_cache = double('cache_store')
+      Cassette.cache_backend = global_cache
+
+      logger = Logger.new('/dev/null')
+
+      # exercise
+      auth_cache = described_class.new(logger)
+
+      expect(auth_cache.backend).to eq(global_cache)
+
+      # tear down
+      Cassette.cache_backend = nil
+    end
   end
 end

@@ -37,5 +37,21 @@ module Cassette
     @config if defined?(@config)
   end
 
+  def cache_backend
+    @cache_backend ||= begin
+      if defined?(::Rails) && ::Rails.cache
+        ::Rails.cache
+      elsif defined?(::ActiveSupport::Cache::MemoryStore)
+        ActiveSupport::Cache::MemoryStore.new
+      else
+        Cache::NullStore.new
+      end
+    end
+  end
+
+  def self.cache_backend=(cache_backend)
+    @cache_backend = cache_backend
+  end
+
   def_delegators Http::Request, :post
 end

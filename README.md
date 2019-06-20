@@ -1,6 +1,6 @@
 # Cassette::Client
 
-[![Build Status](https://travis-ci.org/locaweb/cassette.svg)](https://travis-ci.org/locaweb/cassette) 
+[![Build Status](https://travis-ci.org/locaweb/cassette.svg)](https://travis-ci.org/locaweb/cassette)
 
 [![Test Coverage](https://codeclimate.com/github/locaweb/cassette/badges/coverage.svg)](https://codeclimate.com/github/locaweb/cassette/coverage)
 

@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## UNRELEASED
+### Fixed
+- Fix the way the cache backend is set and get to use the same one in everywhere
+
 ## [1.2.5] - 2019-06-19
 ### Changed
 - ST caching now uses a hash of the TGT to avoid using `#delete_matched`
