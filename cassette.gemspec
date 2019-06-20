@@ -15,7 +15,11 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'rspec-its'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'pry'
+  if RUBY_VERSION >= '2.3.0'
+    gem.add_development_dependency 'pry-byebug'
+  else
+    gem.add_development_dependency 'pry'
+  end
   gem.add_development_dependency 'rubycas-client'
   gem.add_development_dependency 'simplecov'
   gem.add_development_dependency 'rubocop'
