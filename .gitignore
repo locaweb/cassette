@@ -4,3 +4,5 @@ coverage/
 *.swp
 *.swo
 /spec/reports
+/spec/support/last_execution_examples_result.txt
+.tags_sorted_by_file

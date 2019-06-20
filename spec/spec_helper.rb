@@ -17,6 +17,9 @@ end
 RSpec.configure do |config|
   config.mock_framework = :rspec
   config.include Fixtures
+  last_execution_result_file = 'spec/support/last_execution_examples_result.txt'
+  config.example_status_persistence_file_path = last_execution_result_file
+  config.order = 'random'
 end
 
 SimpleCov.start 'gem' do
