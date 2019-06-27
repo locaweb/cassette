@@ -2,7 +2,7 @@ module Cassette
   class Version
     MAJOR = '1'
     MINOR = '2'
-    PATCH = '5'
+    PATCH = '6'
 
     def self.version
       [MAJOR, MINOR, PATCH].join('.')
