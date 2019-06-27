@@ -50,6 +50,7 @@ describe Cassette do
 
     context 'when the cache_backend is not set' do
       it 'returns Rails.cache if set' do
+        described_class.cache_backend = nil
         rails_cache = double('cache')
         rails = double('Rails')
         allow(rails).to receive(:cache).and_return(rails_cache)
@@ -63,6 +64,8 @@ describe Cassette do
       end
 
       it 'returns MemoryStore if Rails.cache not set' do
+        described_class.cache_backend = nil
+
         # exercise and verify
         expect(described_class.cache_backend).to be_a(ActiveSupport::Cache::MemoryStore)
 
@@ -71,6 +74,7 @@ describe Cassette do
       end
 
       it 'returns NullStore if Rails.cache and MemoryStore are not set' do
+        described_class.cache_backend = nil
         hide_const('ActiveSupport::Cache::MemoryStore')
         require 'cassette/cache/null_store'
 
