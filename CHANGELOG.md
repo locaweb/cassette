@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.7] - 2019-07-01
+### Fixed
+- Fix compatibility with the previous version when setting the cache
+
 ## [1.2.6] - 2019-06-27
 ### Fixed
 - Fix the way the cache backend is set and get to use the same one in everywhere
