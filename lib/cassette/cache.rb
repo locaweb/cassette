@@ -33,6 +33,10 @@ module Cassette
       Cassette.cache_backend
     end
 
+    def backend=(backend)
+      Cassette.cache_backend = backend
+    end
+
     def self.backend=(backend)
       ::Cassette.cache_backend = backend
     end
