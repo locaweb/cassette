@@ -7,11 +7,7 @@ describe Cassette::Authentication::Filter do
 
   shared_context 'with NOAUTH' do
     before do
-      ENV['NOAUTH'] = 'yes'
-    end
-
-    after do
-      ENV.delete('NOAUTH')
+      stub_const('ENV', ENV.to_hash.merge('NOAUTH' => 'true'))
     end
   end
 

@@ -65,8 +65,9 @@ describe Cassette::Authentication::Authorities do
   end
 
   context 'with authentication disabled' do
-    before { ENV['NOAUTH'] = 'true' }
-    after { ENV.delete('NOAUTH') }
+    before do
+      stub_const('ENV', ENV.to_hash.merge('NOAUTH' => 'true'))
+    end
     subject { Cassette::Authentication::Authorities.new('[]') }
 
     it '#has_role? returns true for every role' do
