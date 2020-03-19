@@ -2,11 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0] - 2020-03-19
+## [1.4.0] - 2020-03-19
+## [unreleased]
 ### Changed
 - Make the SSL_Verify and TLS Version version configurable
 
-## [1.2.????] - 2019-11-07
+## [1.3.0] - 2020-03-19
+### Changed
 - Improve logs to know when the TGT was cached
 
 ## [1.2.7] - 2019-07-01

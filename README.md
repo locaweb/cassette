@@ -25,7 +25,15 @@ $ bundle
 Require this library and create an intializer to set its configuration:
 
 ```ruby
-Cassette.config = config
+Cassete.config = OpenStruct.new(
+  username: 'user',
+  password: 'secret',
+  service: 'test-api.example.org',
+  base: 'https://some-cas.example.org',
+  base_authority: 'CASTEST',
+  verify_ssl: true,       # If not defined, the default value will be: false.
+  tls_version: 'TLSv1_2'  # if not defined, the default value will be: 'TLSv1'.
+)
 ```
 
 where config is an object that responds to the methods `base` for the base CAS uri, `username` and `password` if you are authenticating on other systems and `service` and `base_authority` if you are using the authentication filter to authenticate your app.
