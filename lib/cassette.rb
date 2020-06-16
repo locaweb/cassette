@@ -22,7 +22,7 @@ module Cassette
   attr_writer :config, :logger
 
   DEFAULT_TIMEOUT     = 10
-  DEFAULT_TLS_VERSION = 'TLSv1'.freeze
+  DEFAULT_TLS_VERSION = 'TLSv1_2'.freeze
   DEFAULT_VERIFY_SSL  = false
 
   def logger
@@ -38,9 +38,9 @@ module Cassette
   def config
     @config if defined?(@config)
 
-    @config.tls_version = DEFAULT_TLS_VERSION if @config.tls_version.nil?
+    @config.tls_version = DEFAULT_TLS_VERSION if @config&.tls_version.nil?
 
-    @config.verify_ssl = DEFAULT_VERIFY_SSL if @config.verify_ssl.nil?
+    @config.verify_ssl = DEFAULT_VERIFY_SSL if @config&.verify_ssl.nil?
 
     @config
   end
