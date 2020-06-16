@@ -1,7 +1,7 @@
 module Cassette
   class Version
     MAJOR = '1'.freeze
-    MINOR = '4'.freeze
+    MINOR = '5'.freeze
     PATCH = '0'.freeze
 
     def self.version
