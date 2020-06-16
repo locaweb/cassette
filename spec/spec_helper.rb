@@ -6,7 +6,7 @@ require 'webmock/rspec'
 require 'rspec/its'
 require 'faker'
 if RUBY_VERSION >= '2.3.0'
-  require 'pry-byebug'
+  # require 'pry-byebug'
 end
 
 Dir['spec/support/**/*.rb'].each { |f| load f }

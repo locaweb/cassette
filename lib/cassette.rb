@@ -14,6 +14,7 @@ require 'cassette/authentication/filter'
 require 'faraday'
 require 'forwardable'
 require 'logger'
+require 'ostruct'
 
 module Cassette
   extend Forwardable
@@ -36,11 +37,11 @@ module Cassette
   end
 
   def config
-    @config if defined?(@config)
+    @config = OpenStruct.new unless defined?(@config)
 
-    @config.tls_version = DEFAULT_TLS_VERSION if @config&.tls_version.nil?
+    @config.tls_version = DEFAULT_TLS_VERSION if @config.tls_version.nil?
 
-    @config.verify_ssl = DEFAULT_VERIFY_SSL if @config&.verify_ssl.nil?
+    @config.verify_ssl = DEFAULT_VERIFY_SSL if @config.verify_ssl.nil?
 
     @config
   end
