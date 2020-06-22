@@ -5,7 +5,7 @@ require 'yaml'
 require 'webmock/rspec'
 require 'rspec/its'
 require 'faker'
-if RUBY_VERSION >= '2.3.0'
+if RUBY_VERSION >= '2.4.0'
   require 'pry-byebug'
 end
 
