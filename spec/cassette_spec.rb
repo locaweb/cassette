@@ -21,7 +21,7 @@ describe Cassette do
     end
 
     context 'when tls_version was not specified' do
-      it 'uses default TLS version: TLSv1' do
+      it 'uses default TLS version: TLSv1_2' do
         config = OpenStruct.new(
           YAML.load_file('spec/config.yml')
         )
@@ -32,7 +32,7 @@ describe Cassette do
         Cassette.config = config
 
         expect(Cassette.config.tls_version)
-          .to eq('TLSv1')
+          .to eq('TLSv1_2')
       end
     end
 
