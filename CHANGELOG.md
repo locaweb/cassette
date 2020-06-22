@@ -2,8 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## UNRELEASED
+
 ## [1.5.0] - 2020-06-22
-## [unreleased]
 ### Changed
 - Make TLS default Version 1.2
 - Fix Cassette::Client instance creation without default configuration
