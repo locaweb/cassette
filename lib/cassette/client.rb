@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Cassette
   class Client
     def self.method_missing(name, *args)
@@ -20,12 +18,16 @@ module Cassette
 
     def tgt(usr, pwd, force = false)
       logger.info 'Requesting TGT'
-      cache.fetch_tgt(force: force) do
-        response = http.post(tickets_path, username: usr, password: pwd)
-        tgt = Regexp.last_match(1) if response.headers['Location'] =~ /tickets\/(.*)/
-        logger.info "TGT is #{tgt}"
-        tgt
+      cached = true
+
+      tgt = cache.fetch_tgt(force: force) do
+        cached = false
+        request_new_tgt(usr, pwd)
       end
+
+      logger.info("TGT cache hit, value: '#{tgt}'") if cached
+
+      tgt
     end
 
     def st(tgt_param, service, force = false)
@@ -49,7 +51,7 @@ module Cassette
     attr_accessor :cache, :logger, :http, :config
 
     def st_with_retry(user, pass, service, retrying = false)
-      st(->{ tgt(user, pass, retrying) }, service)
+      st(-> { tgt(user, pass, retrying) }, service)
     rescue Cassette::Errors::NotFound => e
       raise e if retrying
 
@@ -59,7 +61,14 @@ module Cassette
     end
 
     def tickets_path
-      "/v1/tickets"
+      '/v1/tickets'
+    end
+
+    def request_new_tgt(usr, pwd)
+      response = http.post(tickets_path, username: usr, password: pwd)
+      tgt = Regexp.last_match(1) if response.headers['Location'] =~ %r{tickets/(.*)}
+      logger.info "TGT is #{tgt}"
+      tgt
     end
   end
 end

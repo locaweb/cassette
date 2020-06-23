@@ -7,6 +7,78 @@ describe Cassette do
     Cassette.logger = original_logger
   end
 
+  describe '.config' do
+    it 'defines Cassette initial configuration based on a OpenStruct' do
+
+      config = OpenStruct.new(
+        YAML.load_file('spec/config.yml')
+      )
+
+      Cassette.config = config
+
+      expect(Cassette.config)
+        .to eq(config)
+    end
+
+    context 'when tls_version was not specified' do
+      it 'uses default TLS version: TLSv1_2' do
+        config = OpenStruct.new(
+          YAML.load_file('spec/config.yml')
+        )
+
+        # Removing tls_version field
+        config.delete_field(:tls_version)
+
+        Cassette.config = config
+
+        expect(Cassette.config.tls_version)
+          .to eq('TLSv1_2')
+      end
+    end
+
+    context 'when tls_version is specified' do
+      it 'uses this version' do
+        config = OpenStruct.new(
+          YAML.load_file('spec/config.yml')
+        )
+
+        Cassette.config = config
+
+        expect(Cassette.config.tls_version)
+          .to eq('TLSv1_2')
+      end
+    end
+
+    context 'when verify_ssl was not specified' do
+      it 'uses default verify_ssl value: false' do
+        config = OpenStruct.new(
+          YAML.load_file('spec/config.yml')
+        )
+
+        # Removing verify_ssl field
+        config.delete_field(:verify_ssl)
+
+        Cassette.config = config
+
+        expect(Cassette.config.verify_ssl)
+          .to be false
+      end
+    end
+
+    context 'when verify_ssl is specified' do
+      it 'uses this value' do
+        config = OpenStruct.new(
+          YAML.load_file('spec/config.yml')
+        )
+
+        Cassette.config = config
+
+        expect(Cassette.config.verify_ssl)
+          .to be true
+      end
+    end
+  end
+
   describe '.logger' do
     it 'returns a default instance' do
       expect(Cassette.logger).not_to be_nil

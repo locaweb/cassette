@@ -16,7 +16,7 @@ module Cassette
       def fetch_tgt(options = {}, &_block)
         options = { expires_in: 4 * 3600, max_uses: 5000, force: false }.merge(options)
         fetch('Cassette::Client.tgt', options) do
-          logger.info 'TGT is not cached'
+          logger.info('TGT cache miss')
           yield
         end
       end

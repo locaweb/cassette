@@ -63,50 +63,87 @@ describe Cassette::Client do
     end
 
     context 'when tgt is not cached' do
-      let(:tgt) { 'TGT-Something-example' }
-      let(:force) { false }
-
-      before do
-        allow(cache).to receive(:fetch_tgt) do |opts, &_block|
-          expect(opts[:force]).to eq false
-          tgt
-        end
-
-        allow(http).to receive(:post)
+      after do
+        Cassette.logger = Logger.new('/dev/null')
       end
 
-      it { is_expected.to eq tgt }
+      it 'returns the tgt and logs correctly' do
+        Cassette::Client.cache.backend.clear
+
+        tgt = 'TGT-Something-example'
+        response = double('response', headers: {'Location' => "tickets/#{tgt}"})
+        allow(http).to receive(:post).and_return(response)
+
+        logger = spy(:logger)
+        Cassette.logger = logger
+
+        client = Cassette::Client.new(http_client: http)
+
+        # exercise
+        result = client.tgt('user', 'pass')
+
+        # verify
+        expect(result).to eq(tgt)
+        expect(logger).to have_received(:info).with("TGT cache miss").ordered
+        expect(logger).to have_received(:info).with("TGT is #{tgt}").ordered
+      end
     end
 
     context 'with a cached tgt' do
-      let(:tgt) { 'TGT-Something-example' }
-
-      before do
-        allow(cache).to receive(:fetch_tgt).with(hash_including(force: force))
-          .and_return(tgt)
-
-        allow(http).to receive(:post)
+      after do
+        Cassette.logger = Logger.new('/dev/null')
       end
 
-      shared_context 'force control' do
-        it { is_expected.to eq tgt }
+      it 'returns the tgt from the cache and logs correctly' do
+        Cassette::Client.cache.backend.clear
 
-        it 'forwards force to the cache' do
-          subject
-          expect(cache).to have_received(:fetch_tgt).with(hash_including(force: force))
-        end
+        tgt = 'TGT-Something-example'
+        response = double('response', headers: {'Location' => "tickets/#{tgt}"})
+        allow(http).to receive(:post).and_return(response)
+
+        # this first call is to set the cache
+        client = Cassette::Client.new(http_client: http)
+        result = client.tgt('user', 'pass')
+
+        logger = spy(:logger)
+        Cassette.logger = logger
+        client = Cassette::Client.new(http_client: http)
+
+        # exercise
+        result = client.tgt('user', 'pass')
+
+        # verify
+        expect(result).to eq(tgt)
+        expect(logger).to have_received(:info).with("TGT cache hit, value: '#{tgt}'")
       end
 
-      context 'and no force' do
-        let(:force) { false }
+      it 'generates another tgt when the param force is true' do
+        Cassette::Client.cache.backend.clear
 
-        include_context 'force control'
-      end
+        tgt = 'TGT-Something-example'
+        response = double('response', headers: {'Location' => "tickets/#{tgt}"})
+        allow(http).to receive(:post).and_return(response)
 
-      context 'and using the force' do
-        let(:force) { true }
+        # this first call is to set the cache
+        client = Cassette::Client.new(http_client: http)
+        result = client.tgt('user', 'pass')
 
-        include_context 'force control'
+        tgt2 = 'TGT2-Something-example'
+        response = double('response', headers: {'Location' => "tickets/#{tgt2}"})
+        allow(http).to receive(:post).and_return(response)
+
+        logger = spy(:logger)
+        Cassette.logger = logger
+        client = Cassette::Client.new(http_client: http)
+
+        # exercise
+        force = true
+        result = client.tgt('user', 'pass', force)
+
+        # verify
+        expect(result).to eq(tgt2)
+        expect(logger).to have_received(:info).with("TGT cache miss").ordered
+        expect(logger).to have_received(:info).with("TGT is #{tgt2}").ordered
       end
     end
   end

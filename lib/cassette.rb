@@ -14,6 +14,7 @@ require 'cassette/authentication/filter'
 require 'faraday'
 require 'forwardable'
 require 'logger'
+require 'ostruct'
 
 module Cassette
   extend Forwardable
@@ -21,7 +22,9 @@ module Cassette
 
   attr_writer :config, :logger
 
-  DEFAULT_TIMEOUT = 10
+  DEFAULT_TIMEOUT     = 10
+  DEFAULT_TLS_VERSION = 'TLSv1_2'.freeze
+  DEFAULT_VERIFY_SSL  = false
 
   def logger
     @logger ||= begin
@@ -34,7 +37,13 @@ module Cassette
   end
 
   def config
-    @config if defined?(@config)
+    @config = OpenStruct.new unless defined?(@config)
+
+    @config.tls_version = DEFAULT_TLS_VERSION if @config.tls_version.nil?
+
+    @config.verify_ssl = DEFAULT_VERIFY_SSL if @config.verify_ssl.nil?
+
+    @config
   end
 
   def cache_backend

@@ -36,7 +36,8 @@ module Cassette
       end
 
       def request
-        @request ||= Faraday.new(url: config.base, ssl: { verify: false, version: 'TLSv1' }) do |conn|
+        @request ||= Faraday.new(url: config.base, ssl:
+          { verify: config.verify_ssl, version: config.tls_version }) do |conn|
           conn.adapter Faraday.default_adapter
         end
       end

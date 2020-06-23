@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## UNRELEASED
+### Changed
+- Removed pry/byebug from Rubies < 2.4 since they are no longer supported
+- Remove Gemfile.lock from version control
+
+## [1.5.0] - 2020-06-22
+### Changed
+- Make TLS default Version 1.2
+- Fix Cassette::Client instance creation without default configuration
+
+## [1.4.0] - 2020-03-19
+### Changed
+- Make the SSL_Verify and TLS Version version configurable
+
+## [1.3.0] - 2020-03-19
+### Changed
+- Improve logs to know when the TGT was cached
+
 ## [1.2.7] - 2019-07-01
 ### Fixed
 - Fix compatibility with the previous version when setting the cache
