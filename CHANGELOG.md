@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
+
+## [1.6.0] - 2020-11-26
 ### Changed
+- Make `cas_extra_attributes` accessible as strings or symbols when restoring
+  an user from session
 - Removed pry/byebug from Rubies < 2.4 since they are no longer supported
 - Remove Gemfile.lock from version control
 
