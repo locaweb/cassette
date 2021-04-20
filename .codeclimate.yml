@@ -1,7 +1,5 @@
 ---
 engines:
-  bundler-audit:
-    enabled: false
   duplication:
     enabled: true
     config:
