@@ -25,7 +25,7 @@ $ bundle
 Require this library and create an intializer to set its configuration:
 
 ```ruby
-Cassete.config = OpenStruct.new(
+Cassette.config = OpenStruct.new(
   username: 'user',
   password: 'secret',
   service: 'test-api.example.org',
@@ -98,7 +98,7 @@ Your config object must respond to `services` and the filter will check your con
 In your initializer:
 
 ```ruby
-Cassete.config = OpenStruct.new(
+Cassette.config = OpenStruct.new(
   # omitted
   service: "example.org",
   services: ["api.example.org", "www.example.org", "subdomain.example.org"]
