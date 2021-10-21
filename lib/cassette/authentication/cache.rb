@@ -2,6 +2,7 @@
 
 require 'cassette/authentication'
 require 'cassette/cache'
+require 'active_support/notifications'
 
 module Cassette
   class Authentication
