@@ -36,6 +36,8 @@ module Cassette
 
           logger.info("Validation resut: #{response.inspect}")
 
+          return nil unless ticket_response.login
+
           Cassette::Authentication::User.new(
             login: ticket_response.login,
             name: ticket_response.name,
@@ -43,7 +45,7 @@ module Cassette
             extra_attributes: ticket_response.extra_attributes,
             ticket: ticket,
             config: config
-          ) if ticket_response.login
+          )
         rescue => exception
           logger.error "Error while authenticating ticket #{ticket}: #{exception.message}"
           raise Cassette::Errors::Forbidden, exception.message

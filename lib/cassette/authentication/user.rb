@@ -11,6 +11,7 @@ module Cassette
 
       attr_accessor :login, :name, :authorities, :email, :ticket, :type,
                     :extra_attributes
+
       def_delegators :@authorities, :has_role?, :has_raw_role?
 
       def initialize(attrs = {})
@@ -23,7 +24,7 @@ module Cassette
         @extra_attributes = attrs[:extra_attributes]
         @authorities      = Cassette::Authentication::Authorities
                             .parse(attrs.fetch(:authorities, '[]'),
-                                   config && config.base_authority)
+                                   config&.base_authority)
       end
 
       %w(customer employee).each do |type|
