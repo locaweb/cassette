@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
 
+### Added
+- Make CAS extra attributes available in `Cas::Authentication::User`
+
 ## [1.6.0] - 2020-11-26
 ### Changed
 - Make `cas_extra_attributes` accessible as strings or symbols when restoring

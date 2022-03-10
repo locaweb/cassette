@@ -40,6 +40,7 @@ module Cassette
             login: ticket_response.login,
             name: ticket_response.name,
             authorities: ticket_response.authorities,
+            extra_attributes: ticket_response.extra_attributes,
             ticket: ticket,
             config: config
           ) if ticket_response.login

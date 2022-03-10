@@ -4,7 +4,7 @@ require 'rexml/xpath'
 module Cassette
   module Http
     class TicketResponse
-      attr_reader :login, :name, :authorities
+      attr_reader :login, :name, :extra_attributes, :authorities
 
       def initialize(response)
         namespaces = { "cas" => "http://www.yale.edu/tp/cas" }
@@ -22,8 +22,9 @@ module Cassette
             elements.
             map { |e| [e.name, e.text] }]
 
-          @name = attributes['cn']
-          @authorities = attributes['authorities']
+          @name = attributes.delete('cn')
+          @authorities = attributes.delete('authorities')
+          @extra_attributes = attributes
         end
       end
     end
