@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
 
+## [1.7.0] - 2021-06-07
+### Added
+- Add Issue and Pull Request templates
+
 ## [1.6.0] - 2020-11-26
 ### Changed
 - Make `cas_extra_attributes` accessible as strings or symbols when restoring
