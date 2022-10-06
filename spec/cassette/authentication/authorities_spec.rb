@@ -1,8 +1,8 @@
-
+# frozen_string_literal: true
 
 describe Cassette::Authentication::Authorities do
   subject do
-    Cassette::Authentication::Authorities
+    described_class
   end
 
   describe '#has_role?' do
@@ -10,15 +10,15 @@ describe Cassette::Authentication::Authorities do
     let(:authorities) { subject.parse(input) }
 
     it 'adds the application prefix to roles' do
-      expect(authorities.has_role?('CREATE-USER')).to eql(true)
+      expect(authorities.has_role?('CREATE-USER')).to be(true)
     end
 
     it 'ignores role case' do
-      expect(authorities.has_role?('create-user')).to eql(true)
+      expect(authorities.has_role?('create-user')).to be(true)
     end
 
     it 'replaces underscores with dashes' do
-      expect(authorities.has_role?('create_user')).to eql(true)
+      expect(authorities.has_role?('create_user')).to be(true)
     end
   end
 
@@ -46,17 +46,17 @@ describe Cassette::Authentication::Authorities do
   context 'CAS authorities parsing' do
     it 'handles single authority' do
       input = 'CUSTOMERAPI'
-      expect(subject.parse(input).authorities).to eq(%w(CUSTOMERAPI))
+      expect(subject.parse(input).authorities).to eq(%w[CUSTOMERAPI])
     end
 
     it 'handles multiple authorities with surrounding []' do
       input = '[CUSTOMERAPI, SAPI]'
-      expect(subject.parse(input).authorities).to eq(%w(CUSTOMERAPI SAPI))
+      expect(subject.parse(input).authorities).to eq(%w[CUSTOMERAPI SAPI])
     end
 
     it 'ignores whitespace in multiple authorities' do
       input = '[CUSTOMERAPI,SAPI]'
-      expect(subject.parse(input).authorities).to eq(%w(CUSTOMERAPI SAPI))
+      expect(subject.parse(input).authorities).to eq(%w[CUSTOMERAPI SAPI])
     end
 
     it 'returns an empty array when input is nil' do
@@ -65,19 +65,20 @@ describe Cassette::Authentication::Authorities do
   end
 
   context 'with authentication disabled' do
+    subject { described_class.new('[]') }
+
     before do
       stub_const('ENV', ENV.to_hash.merge('NOAUTH' => 'true'))
     end
-    subject { Cassette::Authentication::Authorities.new('[]') }
 
     it '#has_role? returns true for every role' do
       expect(subject.authorities).to be_empty
-      expect(subject.has_role?(:can_manage)).to eql(true)
+      expect(subject.has_role?(:can_manage)).to be(true)
     end
 
     it '#has_raw_role? returns true for every role' do
       expect(subject.authorities).to be_empty
-      expect(subject.has_raw_role?('SAPI_CUSTOMER-CREATOR')).to eql(true)
+      expect(subject.has_raw_role?('SAPI_CUSTOMER-CREATOR')).to be(true)
     end
   end
 end

@@ -1,11 +1,12 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 describe Cassette::Authentication do
+  subject(:authentication) do
+    described_class.new(cache: cache, http_client: http)
+  end
+
   let(:cache) { instance_double(Cassette::Authentication::Cache) }
   let(:http)  { instance_double(Cassette::Http::Request) }
-
-  subject(:authentication) do
-    Cassette::Authentication.new(cache: cache, http_client: http)
-  end
 
   describe '#ticket_user' do
     subject(:ticket_user) { authentication.ticket_user(ticket) }
@@ -21,6 +22,7 @@ describe Cassette::Authentication do
       end
 
       it { is_expected.to eql(cached_value) }
+
       it 'calls Cache#fetch_authentication with ticket and service' do
         expect(cache).to receive(:fetch_authentication)
           .with(ticket, service)
@@ -52,7 +54,7 @@ describe Cassette::Authentication do
       context 'with a failed CAS response' do
         before do
           allow(http).to receive(:get).with(anything, anything)
-            .and_return(OpenStruct.new(body: fixture('cas/fail.xml')))
+                                      .and_return(OpenStruct.new(body: fixture('cas/fail.xml')))
         end
 
         it 'returns nil' do
@@ -63,7 +65,7 @@ describe Cassette::Authentication do
       context 'with a successful CAS response' do
         before do
           allow(http).to receive(:get).with(anything, anything)
-            .and_return(OpenStruct.new(body: fixture('cas/success.xml')))
+                                      .and_return(OpenStruct.new(body: fixture('cas/success.xml')))
         end
 
         it 'returns an User' do

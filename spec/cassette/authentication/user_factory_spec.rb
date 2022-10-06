@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Cassette::Rubycas::UserFactory do
@@ -9,6 +11,10 @@ RSpec.describe Cassette::Rubycas::UserFactory do
   end
 
   describe '#from_session' do
+    subject do
+      mod.from_session(session)
+    end
+
     let(:session) do
       name = Faker.name
 
@@ -24,10 +30,6 @@ RSpec.describe Cassette::Rubycas::UserFactory do
 
     let(:attributes) do
       session[:cas_extra_attributes]
-    end
-
-    subject do
-      mod.from_session(session)
     end
 
     context 'with default attributes' do

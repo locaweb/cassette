@@ -1,4 +1,4 @@
-
+# frozen_string_literal: true
 
 describe Cassette do
   def keeping_logger(&block)
@@ -9,14 +9,13 @@ describe Cassette do
 
   describe '.config' do
     it 'defines Cassette initial configuration based on a OpenStruct' do
-
       config = OpenStruct.new(
         YAML.load_file('spec/config.yml')
       )
 
-      Cassette.config = config
+      described_class.config = config
 
-      expect(Cassette.config)
+      expect(described_class.config)
         .to eq(config)
     end
 
@@ -29,9 +28,9 @@ describe Cassette do
         # Removing tls_version field
         config.delete_field(:tls_version)
 
-        Cassette.config = config
+        described_class.config = config
 
-        expect(Cassette.config.tls_version)
+        expect(described_class.config.tls_version)
           .to eq('TLSv1_2')
       end
     end
@@ -42,9 +41,9 @@ describe Cassette do
           YAML.load_file('spec/config.yml')
         )
 
-        Cassette.config = config
+        described_class.config = config
 
-        expect(Cassette.config.tls_version)
+        expect(described_class.config.tls_version)
           .to eq('TLSv1_2')
       end
     end
@@ -58,9 +57,9 @@ describe Cassette do
         # Removing verify_ssl field
         config.delete_field(:verify_ssl)
 
-        Cassette.config = config
+        described_class.config = config
 
-        expect(Cassette.config.verify_ssl)
+        expect(described_class.config.verify_ssl)
           .to be false
       end
     end
@@ -71,9 +70,9 @@ describe Cassette do
           YAML.load_file('spec/config.yml')
         )
 
-        Cassette.config = config
+        described_class.config = config
 
-        expect(Cassette.config.verify_ssl)
+        expect(described_class.config.verify_ssl)
           .to be true
       end
     end
@@ -81,27 +80,28 @@ describe Cassette do
 
   describe '.logger' do
     it 'returns a default instance' do
-      expect(Cassette.logger).not_to be_nil
-      expect(Cassette.logger.is_a?(Logger)).to eql(true)
+      expect(described_class.logger).not_to be_nil
+      expect(described_class.logger.is_a?(Logger)).to be(true)
     end
 
     it 'returns rails logger when Rails is available' do
       keeping_logger do
-        Cassette.logger = nil
+        described_class.logger = nil
         rails = double('Rails')
         expect(rails).to receive(:logger).and_return(rails).at_least(:once)
         stub_const('Rails', rails)
-        expect(Cassette.logger).to eql(rails)
+        expect(described_class.logger).to eql(rails)
       end
     end
   end
 
   describe '.logger=' do
-    let(:logger) { Logger.new(STDOUT) }
+    let(:logger) { Logger.new($stdout) }
+
     it 'defines the logger instance' do
       keeping_logger do
-        Cassette.logger = logger
-        expect(Cassette.logger).to eq(logger)
+        described_class.logger = logger
+        expect(described_class.logger).to eq(logger)
       end
     end
   end

@@ -1,8 +1,8 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 describe Cassette::Cache do
   subject do
-    cached()
+    cached
   end
 
   describe '#backend' do

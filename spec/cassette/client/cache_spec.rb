@@ -1,6 +1,4 @@
-# encoding: utf-8
-
-
+# frozen_string_literal: true
 
 describe Cassette::Client::Cache do
   it 'uses the cache store set in configuration' do

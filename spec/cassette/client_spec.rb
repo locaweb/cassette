@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 require 'spec_helper'
 
@@ -8,12 +8,12 @@ describe Cassette::Client do
   let(:options) do
     {
       http_client: http,
-      cache: cache,
+      cache: cache
     }
   end
 
   let(:client) do
-    Cassette::Client.new(options)
+    described_class.new(options)
   end
 
   describe '#health_check' do
@@ -68,23 +68,23 @@ describe Cassette::Client do
       end
 
       it 'returns the tgt and logs correctly' do
-        Cassette::Client.cache.backend.clear
+        described_class.cache.backend.clear
 
         tgt = 'TGT-Something-example'
-        response = double('response', headers: {'Location' => "tickets/#{tgt}"})
+        response = double('response', headers: { 'Location' => "tickets/#{tgt}" })
         allow(http).to receive(:post).and_return(response)
 
         logger = spy(:logger)
         Cassette.logger = logger
 
-        client = Cassette::Client.new(http_client: http)
+        client = described_class.new(http_client: http)
 
         # exercise
         result = client.tgt('user', 'pass')
 
         # verify
         expect(result).to eq(tgt)
-        expect(logger).to have_received(:info).with("TGT cache miss").ordered
+        expect(logger).to have_received(:info).with('TGT cache miss').ordered
         expect(logger).to have_received(:info).with("TGT is #{tgt}").ordered
       end
     end
@@ -95,19 +95,19 @@ describe Cassette::Client do
       end
 
       it 'returns the tgt from the cache and logs correctly' do
-        Cassette::Client.cache.backend.clear
+        described_class.cache.backend.clear
 
         tgt = 'TGT-Something-example'
-        response = double('response', headers: {'Location' => "tickets/#{tgt}"})
+        response = double('response', headers: { 'Location' => "tickets/#{tgt}" })
         allow(http).to receive(:post).and_return(response)
 
         # this first call is to set the cache
-        client = Cassette::Client.new(http_client: http)
+        client = described_class.new(http_client: http)
         result = client.tgt('user', 'pass')
 
         logger = spy(:logger)
         Cassette.logger = logger
-        client = Cassette::Client.new(http_client: http)
+        client = described_class.new(http_client: http)
 
         # exercise
         result = client.tgt('user', 'pass')
@@ -118,23 +118,23 @@ describe Cassette::Client do
       end
 
       it 'generates another tgt when the param force is true' do
-        Cassette::Client.cache.backend.clear
+        described_class.cache.backend.clear
 
         tgt = 'TGT-Something-example'
-        response = double('response', headers: {'Location' => "tickets/#{tgt}"})
+        response = double('response', headers: { 'Location' => "tickets/#{tgt}" })
         allow(http).to receive(:post).and_return(response)
 
         # this first call is to set the cache
-        client = Cassette::Client.new(http_client: http)
+        client = described_class.new(http_client: http)
         result = client.tgt('user', 'pass')
 
         tgt2 = 'TGT2-Something-example'
-        response = double('response', headers: {'Location' => "tickets/#{tgt2}"})
+        response = double('response', headers: { 'Location' => "tickets/#{tgt2}" })
         allow(http).to receive(:post).and_return(response)
 
         logger = spy(:logger)
         Cassette.logger = logger
-        client = Cassette::Client.new(http_client: http)
+        client = described_class.new(http_client: http)
 
         # exercise
         force = true
@@ -142,7 +142,7 @@ describe Cassette::Client do
 
         # verify
         expect(result).to eq(tgt2)
-        expect(logger).to have_received(:info).with("TGT cache miss").ordered
+        expect(logger).to have_received(:info).with('TGT cache miss').ordered
         expect(logger).to have_received(:info).with("TGT is #{tgt2}").ordered
       end
     end
@@ -150,6 +150,7 @@ describe Cassette::Client do
 
   describe '#st' do
     subject { client.st(tgt_param, service, force) }
+
     let(:service) { 'example.org' }
     let(:tgt) { 'TGT-Example' }
     let(:st) { 'ST-Something-example' }
@@ -190,7 +191,7 @@ describe Cassette::Client do
     end
 
     context 'when tgt is a callable' do
-      let(:tgt_param) { ->{ tgt } }
+      let(:tgt_param) { -> { tgt } }
 
       it_behaves_like 'http client interactions'
     end
@@ -198,7 +199,7 @@ describe Cassette::Client do
     context 'cache control' do
       before do
         allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: force))
-          .and_return(st)
+                                          .and_return(st)
       end
 
       shared_context 'controlling the force' do
@@ -227,6 +228,7 @@ describe Cassette::Client do
 
   describe '#st_for' do
     subject { client.st_for(service) }
+
     let(:service) { 'example.org' }
     let(:cached_tgt) { 'TGT-Something' }
     let(:tgt)  { 'TGT-Something-NEW' }
@@ -242,11 +244,11 @@ describe Cassette::Client do
           .and_return(tgt_response)
 
         allow(http).to receive(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
-          .and_return(st_response)
+                                     .and_return(st_response)
       end
 
       let(:st_response) { Faraday::Response.new(body: st) }
-      let(:tgt_response) { Faraday::Response.new(response_headers: {'Location' => "/v1/tickets/#{tgt}"}) }
+      let(:tgt_response) { Faraday::Response.new(response_headers: { 'Location' => "/v1/tickets/#{tgt}" }) }
 
       it 'returns the generated st' do
         expect(subject).to eq st
@@ -272,7 +274,7 @@ describe Cassette::Client do
         allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: false)).and_yield
 
         allow(http).to receive(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
-          .and_return(st_response)
+                                     .and_return(st_response)
       end
 
       let(:st_response) { Faraday::Response.new(body: st) }
@@ -306,17 +308,17 @@ describe Cassette::Client do
         allow(cache).to receive(:fetch_st).and_yield
 
         allow(http).to receive(:post).with(%r{/v1/tickets/#{cached_tgt}\z}, service: service)
-          .and_raise(Cassette::Errors::NotFound)
+                                     .and_raise(Cassette::Errors::NotFound)
 
         allow(http).to receive(:post)
           .with(%r{/v1/tickets\z}, username: Cassette.config.username, password: Cassette.config.password)
           .and_return(tgt_response)
 
         allow(http).to receive(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
-          .and_return(st_response)
+                                     .and_return(st_response)
       end
 
-      let(:tgt_response) { Faraday::Response.new(response_headers: {'Location' => "/v1/tickets/#{tgt}"}) }
+      let(:tgt_response) { Faraday::Response.new(response_headers: { 'Location' => "/v1/tickets/#{tgt}" }) }
       let(:st_response) { Faraday::Response.new(body: st) }
 
       it 'calls #fetch_st twice' do

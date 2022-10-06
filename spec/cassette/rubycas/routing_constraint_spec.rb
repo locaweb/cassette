@@ -1,22 +1,14 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 require 'spec_helper'
 
 describe Cassette::Rubycas::RoutingConstraint do
   describe '#matches?' do
+    subject { constraint.matches?(request) }
+
     let(:request) do
       OpenStruct.new(session: session)
     end
-
-    let(:user) { instance_double(Cassette::Authentication::User) }
-    let(:constraint) { described_class.new(role, options) }
-
-    subject { constraint.matches?(request) }
-
-    before do
-      allow(constraint).to receive(:from_session).with(session).and_return(user)
-    end
-
     let(:session) do
       {
         cas_user: 'test.user',
@@ -25,6 +17,13 @@ describe Cassette::Rubycas::RoutingConstraint do
           email: 'test.user@example.org'
         }
       }
+    end
+
+    let(:user) { instance_double(Cassette::Authentication::User) }
+    let(:constraint) { described_class.new(role, options) }
+
+    before do
+      allow(constraint).to receive(:from_session).with(session).and_return(user)
     end
 
     context 'with no options' do

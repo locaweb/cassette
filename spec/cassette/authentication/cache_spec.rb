@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 describe Cassette::Authentication::Cache do
   subject(:cache) { described_class.new(Logger.new('/dev/null')) }
@@ -23,13 +23,12 @@ describe Cassette::Authentication::Cache do
     let(:block) { -> { 1 } }
     let(:other_block) { -> { 2 } }
 
-
     before { cache.fetch_authentication(ticket, service, &block) }
 
     it { is_expected.to eq(1) }
 
     context 'when for a second time' do
-      it  { expect(second_call).to eq(1) }
+      it { expect(second_call).to eq(1) }
 
       it do
         expect(other_block).not_to receive(:call)
@@ -37,7 +36,7 @@ describe Cassette::Authentication::Cache do
       end
 
       context 'when calling with a different service' do
-        it  { expect(call_with_other_service).to eq(2) }
+        it { expect(call_with_other_service).to eq(2) }
       end
     end
 

@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 describe Cassette::Authentication::Filter do
   before do
@@ -13,7 +13,7 @@ describe Cassette::Authentication::Filter do
 
   shared_examples_for 'controller behaviour' do
     describe '#validate_raw_role!' do
-      let(:controller) { controller_factory.(described_class).new }
+      let(:controller) { controller_factory.call(described_class).new }
       let(:current_user) { instance_double(Cassette::Authentication::User) }
 
       before do
@@ -47,7 +47,7 @@ describe Cassette::Authentication::Filter do
     end
 
     describe '#validate_role!' do
-      let(:controller) { controller_factory.(described_class).new }
+      let(:controller) { controller_factory.call(described_class).new }
       let(:current_user) { instance_double(Cassette::Authentication::User) }
 
       before do
@@ -95,14 +95,14 @@ describe Cassette::Authentication::Filter do
 
       it_behaves_like 'with NOAUTH' do
         context 'and no ticket' do
-          let(:controller) { controller_factory.(described_class).new }
+          let(:controller) { controller_factory.call(described_class).new }
 
           it_behaves_like 'controller without authentication'
         end
 
         context 'and a ticket header' do
           let(:controller) do
-            controller_factory.(described_class).new({}, 'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class).new({}, 'Service-Ticket' => 'le ticket')
           end
 
           it_behaves_like 'controller without authentication'
@@ -110,7 +110,7 @@ describe Cassette::Authentication::Filter do
 
         context 'and a ticket param' do
           let(:controller) do
-            controller_factory.(described_class).new(ticket: 'le ticket')
+            controller_factory.call(described_class).new(ticket: 'le ticket')
           end
 
           it_behaves_like 'controller without authentication'
@@ -119,12 +119,12 @@ describe Cassette::Authentication::Filter do
 
       context 'when accepts_authentication_service? returns false' do
         let(:controller) do
-          controller_factory.(described_class).new(ticket: 'le ticket')
+          controller_factory.call(described_class).new(ticket: 'le ticket')
         end
 
         before do
           expect(controller).to receive(:accepts_authentication_service?)
-            .with(Cassette.config.service) { false }
+            .with(Cassette.config.service).and_return(false)
         end
 
         it 'raises a Cassette::Errors::Forbidden' do
@@ -135,29 +135,31 @@ describe Cassette::Authentication::Filter do
 
       context 'when accepts_authentication_service? returns true' do
         before do
-          expect(controller).to receive(:accepts_authentication_service?).with(anything) { true }
+          expect(controller).to receive(:accepts_authentication_service?).with(anything).and_return(true)
         end
 
         context 'with a ticket in the query string *AND* headers' do
           let(:controller) do
-            controller_factory.(described_class).new({ 'ticket' => 'le other ticket' },
-                                                'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class).new({ 'ticket' => 'le other ticket' },
+                                                         'Service-Ticket' => 'le ticket')
           end
 
-          it 'should send only the header ticket to validation' do
+          it 'sends only the header ticket to validation' do
             controller.validate_authentication_ticket
-            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket',
+                                                                                     Cassette.config.service)
           end
         end
 
         context 'with a ticket in the query string' do
           let(:controller) do
-            controller_factory.(described_class).new('ticket' => 'le ticket')
+            controller_factory.call(described_class).new('ticket' => 'le ticket')
           end
 
-          it 'should send the ticket to validation' do
+          it 'sends the ticket to validation' do
             controller.validate_authentication_ticket
-            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket',
+                                                                                     Cassette.config.service)
           end
         end
 
@@ -169,7 +171,7 @@ describe Cassette::Authentication::Filter do
               end
             end
 
-            controller_factory.(described_class, mod).new({}, 'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class, mod).new({}, 'Service-Ticket' => 'le ticket')
           end
 
           it 'validates with the overriden value and not the config' do
@@ -182,7 +184,7 @@ describe Cassette::Authentication::Filter do
 
         context 'with a ticket in the Service-Ticket header' do
           let(:controller) do
-            controller_factory.(described_class).new({}, 'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class).new({}, 'Service-Ticket' => 'le ticket')
           end
 
           it 'sends the ticket to validation' do
@@ -196,19 +198,19 @@ describe Cassette::Authentication::Filter do
     end
 
     describe '#accepts_authentication_service?' do
+      subject { controller.accepts_authentication_service?(service) }
+
       let(:controller) do
-        controller_factory.(described_class).new(ticket: 'le ticket')
+        controller_factory.call(described_class).new(ticket: 'le ticket')
       end
 
       before do
         allow(Cassette).to receive(:config) { config }
       end
 
-      subject { controller.accepts_authentication_service?(service) }
-
       context 'when config responds to #services' do
-        let(:subdomain) { "subdomain.acme.org" }
-        let(:not_related) { "acme.org" }
+        let(:subdomain) { 'subdomain.acme.org' }
+        let(:not_related) { 'acme.org' }
 
         let(:config) do
           OpenStruct.new(YAML.load_file('spec/config.yml').merge(services: [subdomain]))
