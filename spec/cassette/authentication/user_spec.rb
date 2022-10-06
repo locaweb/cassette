@@ -8,7 +8,7 @@ describe Cassette::Authentication::User do
   describe '#initialize' do
     context 'without a config' do
       it 'forwards authorities parsing' do
-        expect(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', nil)
+        allow(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', nil)
         described_class.new(login: 'john.doe', name: 'John Doe', authorities: '[CUSTOMERAPI, SAPI]')
       end
     end
@@ -17,8 +17,8 @@ describe Cassette::Authentication::User do
       it 'forwards authorities parsing passing along the base authority' do
         config = object_double(Cassette.config)
 
-        expect(config).to receive(:base_authority).and_return('TESTAPI')
-        expect(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', 'TESTAPI')
+        allow(config).to receive(:base_authority).and_return('TESTAPI')
+        allow(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', 'TESTAPI')
 
         described_class.new(login: 'john.doe', name: 'John Doe',
                             authorities: '[CUSTOMERAPI, SAPI]', config: config)
@@ -45,14 +45,29 @@ describe Cassette::Authentication::User do
     end
   end
 
-  context 'user types' do
+  context 'when checking user types' do
     describe '#employee?' do
       it 'returns true when user is an employee' do
         expect(described_class.new(type: 'employee')).to be_employee
+      end
+
+      it 'returns true when user is an Employee' do
         expect(described_class.new(type: 'Employee')).to be_employee
+      end
+
+      it 'returns true when user is an :employee' do
         expect(described_class.new(type: :employee)).to be_employee
+      end
+
+      it 'returns false when user is an customer' do
         expect(described_class.new(type: 'customer')).not_to be_employee
+      end
+
+      it 'returns false when user is nil' do
         expect(described_class.new(type: nil)).not_to be_employee
+      end
+
+      it 'returns false when user type is empty' do
         expect(described_class.new(type: '')).not_to be_employee
       end
     end
@@ -60,10 +75,25 @@ describe Cassette::Authentication::User do
     describe '#customer?' do
       it 'returns true when the user is a customer' do
         expect(described_class.new(type: 'customer')).to be_customer
+      end
+
+      it 'returns true when the user is a Customer' do
         expect(described_class.new(type: 'Customer')).to be_customer
+      end
+
+      it 'returns true when the user is a :customer' do
         expect(described_class.new(type: :customer)).to be_customer
+      end
+
+      it 'returns false when the user is a employee' do
         expect(described_class.new(type: 'employee')).not_to be_customer
+      end
+
+      it 'returns false when the user is nil' do
         expect(described_class.new(type: nil)).not_to be_customer
+      end
+
+      it 'returns false when the user type is empty' do
         expect(described_class.new(type: '')).not_to be_customer
       end
     end
