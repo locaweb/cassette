@@ -10,12 +10,17 @@ RSpec.describe 'Cassette::Client, Cassette::Authentication integration' do
       expect(client.st_for(config.service)).not_to be_blank
     end
 
-    it 'validates an ST, extracting the user' do
+    context 'when validates an ST, extracting the user' do
       st = client.st_for(config.service)
       user = authentication.ticket_user(st, config.service)
 
-      expect(user).not_to be_blank
-      expect(user.login).to eql(config.username)
+      it do
+        expect(user).not_to be_blank
+      end
+
+      it do
+        expect(user.login).to eql(config.username)
+      end
     end
   end
 end

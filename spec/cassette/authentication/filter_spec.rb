@@ -22,7 +22,7 @@ describe Cassette::Authentication::Filter do
 
       it_behaves_like 'with NOAUTH' do
         it 'never checks the role' do
-          expect(current_user).not_to receive(:has_raw_role?)
+          allow(current_user).not_to receive(:has_raw_role?)
           controller.validate_raw_role!(:something)
         end
 
@@ -34,14 +34,14 @@ describe Cassette::Authentication::Filter do
       it 'forwards to current_user' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_raw_role?).with(role).and_return(true)
+        allow(current_user).to receive(:has_raw_role?).with(role).and_return(true)
         controller.validate_raw_role!(role)
       end
 
       it 'raises a Cassette::Errors::Forbidden when current_user does not have the role' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_raw_role?).with(role).and_return(false)
+        allow(current_user).to receive(:has_raw_role?).with(role).and_return(false)
         expect { controller.validate_raw_role!(role) }.to raise_error(Cassette::Errors::Forbidden)
       end
     end
@@ -56,7 +56,7 @@ describe Cassette::Authentication::Filter do
 
       it_behaves_like 'with NOAUTH' do
         it 'never checks the role' do
-          expect(current_user).not_to receive(:has_role?)
+          allow(current_user).not_to receive(:has_role?)
           controller.validate_role!(:something)
         end
 
@@ -68,14 +68,14 @@ describe Cassette::Authentication::Filter do
       it 'forwards to current_user' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_role?).with(role).and_return(true)
+        allow(current_user).to receive(:has_role?).with(role).and_return(true)
         controller.validate_role!(role)
       end
 
       it 'raises a Cassette::Errors::Forbidden when current_user does not have the role' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_role?).with(role).and_return(false)
+        allow(current_user).to receive(:has_role?).with(role).and_return(false)
         expect { controller.validate_role!(role) }.to raise_error(Cassette::Errors::Forbidden)
       end
     end
@@ -94,13 +94,13 @@ describe Cassette::Authentication::Filter do
       end
 
       it_behaves_like 'with NOAUTH' do
-        context 'and no ticket' do
+        context 'when no ticket is passed' do
           let(:controller) { controller_factory.call(described_class).new }
 
           it_behaves_like 'controller without authentication'
         end
 
-        context 'and a ticket header' do
+        context 'when a ticket header is passed' do
           let(:controller) do
             controller_factory.call(described_class).new({}, 'Service-Ticket' => 'le ticket')
           end
@@ -108,7 +108,7 @@ describe Cassette::Authentication::Filter do
           it_behaves_like 'controller without authentication'
         end
 
-        context 'and a ticket param' do
+        context 'when a ticket param is passed' do
           let(:controller) do
             controller_factory.call(described_class).new(ticket: 'le ticket')
           end
@@ -123,7 +123,7 @@ describe Cassette::Authentication::Filter do
         end
 
         before do
-          expect(controller).to receive(:accepts_authentication_service?)
+          allow(controller).to receive(:accepts_authentication_service?)
             .with(Cassette.config.service).and_return(false)
         end
 
@@ -135,7 +135,7 @@ describe Cassette::Authentication::Filter do
 
       context 'when accepts_authentication_service? returns true' do
         before do
-          expect(controller).to receive(:accepts_authentication_service?).with(anything).and_return(true)
+          allow(controller).to receive(:accepts_authentication_service?).with(anything).and_return(true)
         end
 
         context 'with a ticket in the query string *AND* headers' do
@@ -216,19 +216,19 @@ describe Cassette::Authentication::Filter do
           OpenStruct.new(YAML.load_file('spec/config.yml').merge(services: [subdomain]))
         end
 
-        context 'and the authentication service is included in the configuration' do
+        context 'when the authentication service is included in the configuration' do
           let(:service) { subdomain }
 
           it { is_expected.to eq true }
         end
 
-        context 'and the authentication service is Cassette.config.service' do
+        context 'when the authentication service is Cassette.config.service' do
           let(:service) { Cassette.config.service }
 
           it { is_expected.to eq true }
         end
 
-        context 'and the authentication service is not included in the configuration' do
+        context 'when the authentication service is not included in the configuration' do
           let(:service) { not_related }
 
           it { is_expected.to eq false }
@@ -237,13 +237,13 @@ describe Cassette::Authentication::Filter do
     end
   end
 
-  context 'a Rails 4+ controller' do
+  context 'when controller belongs to Rails 4+' do
     let(:controller_factory) { method(:ControllerMock) }
 
     it_behaves_like 'controller behaviour'
   end
 
-  context 'a Rails 3 controller' do
+  context 'when controller belongs to Rails 3' do
     let(:controller_factory) { method(:LegacyControllerMock) }
 
     it_behaves_like 'controller behaviour'
