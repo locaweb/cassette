@@ -17,25 +17,25 @@ describe Cassette::Client do
   end
 
   describe '#health_check' do
-    subject { client.health_check }
+    subject(:health_check) { client.health_check }
 
     it 'raises any Error' do
-      expect(client).to receive(:st_for).with(anything).and_raise('Failure')
+      allow(client).to receive(:st_for).with(anything).and_raise('Failure')
 
-      expect { subject }.to raise_error('Failure')
+      expect { health_check }.to raise_error('Failure')
     end
 
     it 'tries to generate a ST' do
-      expect(client).to receive(:st_for).with(an_instance_of(String)).and_return('ST-Something')
+      allow(client).to receive(:st_for).with(an_instance_of(String)).and_return('ST-Something')
 
-      expect(subject).to eq 'ST-Something'
+      expect(health_check).to eq 'ST-Something'
     end
   end
 
   describe '#tgt' do
-    subject { client.tgt('user', 'pass', force) }
+    subject(:client_tgt) { client.tgt('user', 'pass', force) }
 
-    context 'http client interactions' do
+    context 'with http client interactions' do
       let(:force) { true }
       let(:response) { Faraday::Response.new }
 
@@ -48,16 +48,16 @@ describe Cassette::Client do
         tgt = 'TGT-something'
         allow(response).to receive(:headers).and_return('Location' => "/tickets/#{tgt}")
 
-        expect(subject).to eq tgt
+        expect(client_tgt).to eq tgt
       end
 
       it 'posts the username and password' do
-        subject
+        client_tgt
         expect(http).to have_received(:post).with(anything, username: 'user', password: 'pass')
       end
 
       it 'posts to a /v1/tickets uri' do
-        subject
+        client_tgt
         expect(http).to have_received(:post).with(%r{/v1/tickets\z}, instance_of(Hash))
       end
     end
@@ -103,7 +103,7 @@ describe Cassette::Client do
 
         # this first call is to set the cache
         client = described_class.new(http_client: http)
-        result = client.tgt('user', 'pass')
+        client.tgt('user', 'pass')
 
         logger = spy(:logger)
         Cassette.logger = logger
@@ -126,7 +126,7 @@ describe Cassette::Client do
 
         # this first call is to set the cache
         client = described_class.new(http_client: http)
-        result = client.tgt('user', 'pass')
+        client.tgt('user', 'pass')
 
         tgt2 = 'TGT2-Something-example'
         response = double('response', headers: { 'Location' => "tickets/#{tgt2}" })
@@ -149,7 +149,7 @@ describe Cassette::Client do
   end
 
   describe '#st' do
-    subject { client.st(tgt_param, service, force) }
+    subject(:client_st) { client.st(tgt_param, service, force) }
 
     let(:service) { 'example.org' }
     let(:tgt) { 'TGT-Example' }
@@ -168,17 +168,17 @@ describe Cassette::Client do
       it 'extracts the tgt from the Location header' do
         allow(response).to receive(:body) { st }
 
-        expect(subject).to eq st
+        expect(client_st).to eq st
       end
 
       it 'posts the service' do
-        subject
+        client_st
 
         expect(http).to have_received(:post).with(anything, service: service)
       end
 
       it 'posts to the tgt uri' do
-        subject
+        client_st
 
         expect(http).to have_received(:post).with(%r{/#{tgt}\z}, instance_of(Hash))
       end
@@ -212,13 +212,13 @@ describe Cassette::Client do
         end
       end
 
-      context 'not using the force' do
+      context 'when not using the force' do
         let(:force) { false }
 
         include_context 'controlling the force'
       end
 
-      context 'using the force' do
+      context 'when using the force' do
         let(:force) { true }
 
         include_context 'controlling the force'
@@ -227,7 +227,7 @@ describe Cassette::Client do
   end
 
   describe '#st_for' do
-    subject { client.st_for(service) }
+    subject(:client_st_for) { client.st_for(service) }
 
     let(:service) { 'example.org' }
     let(:cached_tgt) { 'TGT-Something' }
@@ -251,17 +251,17 @@ describe Cassette::Client do
       let(:tgt_response) { Faraday::Response.new(response_headers: { 'Location' => "/v1/tickets/#{tgt}" }) }
 
       it 'returns the generated st' do
-        expect(subject).to eq st
+        expect(client_st_for).to eq st
       end
 
       it 'generates an ST' do
-        subject
+        client_st_for
 
         expect(http).to have_received(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
       end
 
       it 'generates a TGT' do
-        subject
+        client_st_for
 
         expect(http).to have_received(:post)
           .with(%r{/v1/tickets\z}, username: Cassette.config.username, password: Cassette.config.password)
