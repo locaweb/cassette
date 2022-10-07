@@ -8,10 +8,11 @@ describe Cassette::Authentication::Cache do
       cache.fetch_authentication(ticket, service, &block)
     end
 
-    let(:second_call) do
+    def second_call
       cache.fetch_authentication(ticket, service, &other_block)
     end
-    let(:call_with_other_service) do
+
+    def call_with_other_service
       cache.fetch_authentication(ticket, other_service, &other_block)
     end
 
@@ -42,13 +43,11 @@ describe Cassette::Authentication::Cache do
 
     it 'uses the cache store set in configuration' do
       # setup
-      global_cache = double('cache_store')
+      global_cache = instance_double(described_class, 'cache_store')
       Cassette.cache_backend = global_cache
 
-      logger = Logger.new('/dev/null')
-
       # exercise
-      auth_cache = described_class.new(logger)
+      auth_cache = described_class.new(Logger.new('/dev/null'))
 
       expect(auth_cache.backend).to eq(global_cache)
 
