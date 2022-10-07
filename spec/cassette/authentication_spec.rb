@@ -24,14 +24,14 @@ describe Cassette::Authentication do
       it { is_expected.to eql(cached_value) }
 
       it 'calls Cache#fetch_authentication with ticket and service' do
-        expect(cache).to receive(:fetch_authentication)
+        allow(cache).to receive(:fetch_authentication)
           .with(ticket, service)
 
         ticket_user
       end
 
       it 'passes a block to Cache#fetch_authentication' do
-        expect(cache).to receive(:fetch_authentication) do |*, &block|
+        allow(cache).to receive(:fetch_authentication) do |*, &block|
           expect(block).to be_present
         end
 
@@ -41,7 +41,7 @@ describe Cassette::Authentication do
 
     context 'when not cached' do
       before do
-        expect(cache).to receive(:fetch_authentication) do |_ticket, &block|
+        allow(cache).to receive(:fetch_authentication) do |_ticket, &block|
           block.call
         end
       end
@@ -76,23 +76,25 @@ describe Cassette::Authentication do
   end
 
   describe '#validate_ticket' do
+    subject(:ticket) { described_class.new }
+
     it 'raises a authorization required error when no ticket is provided' do
-      expect { subject.validate_ticket(nil) }.to raise_error(Cassette::Errors::AuthorizationRequired)
+      expect { ticket.validate_ticket(nil) }.to raise_error(Cassette::Errors::AuthorizationRequired)
     end
 
     it 'raises a authorization required error when ticket is blank' do
-      expect { subject.validate_ticket('') }.to raise_error(Cassette::Errors::AuthorizationRequired)
+      expect { ticket.validate_ticket('') }.to raise_error(Cassette::Errors::AuthorizationRequired)
     end
 
     it 'raises a forbidden error when the associated user is not found' do
-      expect(subject).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(nil)
-      expect { subject.validate_ticket('ticket') }.to raise_error(Cassette::Errors::Forbidden)
+      allow(ticket).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(nil)
+      expect { ticket.validate_ticket('ticket') }.to raise_error(Cassette::Errors::Forbidden)
     end
 
     it 'returns the associated user' do
       user = double('User')
-      expect(subject).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(user)
-      expect(subject.validate_ticket('ticket')).to eql(user)
+      allow(ticket).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(user)
+      expect(ticket.validate_ticket('ticket')).to eql(user)
     end
   end
 end
