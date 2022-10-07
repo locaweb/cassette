@@ -103,7 +103,7 @@ describe Cassette do
   describe '.cache_backend' do
     context 'when the cache_backend is already set' do
       it 'returns the cache_backend set' do
-        new_cache = double('cache_backend')
+        new_cache = instance_double(described_class, 'cache_backend')
         described_class.cache_backend = new_cache
 
         # exercise and verify
@@ -117,7 +117,7 @@ describe Cassette do
     context 'when the cache_backend is not set' do
       it 'returns Rails.cache if set' do
         described_class.cache_backend = nil
-        rails_cache = double('cache')
+        rails_cache = instance_double(described_class, 'cache')
         rails = double('Rails')
         allow(rails).to receive(:cache).and_return(rails_cache)
         stub_const('Rails', rails)
