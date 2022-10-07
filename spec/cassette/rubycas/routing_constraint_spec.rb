@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Cassette::Rubycas::RoutingConstraint do
   describe '#matches?' do
-    subject { constraint.matches?(request) }
+    subject(:matches) { constraint.matches?(request) }
 
     let(:request) do
       OpenStruct.new(session: session)
@@ -36,7 +36,7 @@ describe Cassette::Rubycas::RoutingConstraint do
       end
 
       it 'checks the User role' do
-        subject
+        matches
         expect(user).to have_received(:has_role?).with(role)
       end
 
@@ -63,7 +63,7 @@ describe Cassette::Rubycas::RoutingConstraint do
       end
 
       it 'checks the User role' do
-        subject
+        matches
         expect(user).to have_received(:has_raw_role?).with(role)
       end
 
