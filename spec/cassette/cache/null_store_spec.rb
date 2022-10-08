@@ -8,7 +8,9 @@ describe Cassette::Cache::NullStore do
   describe '#read' do
     it 'always return nils' do
       expect(cache.read('key')).to be_nil
+    end
 
+    it 'always return nils even when cache is written' do
       cache.write('key', 'value')
 
       expect(cache.read('key')).to be_nil

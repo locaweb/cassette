@@ -156,7 +156,7 @@ describe Cassette::Client do
     let(:st) { 'ST-Something-example' }
     let(:tgt_param) { tgt }
 
-    shared_context 'http client interactions' do
+    shared_context 'with http client interactions' do
       let(:force) { true }
       let(:response) { Faraday::Response.new }
 
@@ -196,13 +196,13 @@ describe Cassette::Client do
       it_behaves_like 'http client interactions'
     end
 
-    context 'cache control' do
+    context 'with cache control' do
       before do
         allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: force))
                                           .and_return(st)
       end
 
-      shared_context 'controlling the force' do
+      shared_context 'with controlling the force' do
         it { is_expected.to eq st }
 
         it 'forwards force to the cache' do
