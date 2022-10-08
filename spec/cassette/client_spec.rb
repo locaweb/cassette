@@ -121,7 +121,7 @@ describe Cassette::Client do
         described_class.cache.backend.clear
 
         tgt = 'TGT-Something-example'
-        response = double('response', headers: { 'Location' => "tickets/#{tgt}" })
+        response = instance_double('response', headers: { 'Location' => "tickets/#{tgt}" })
         allow(http).to receive(:post).and_return(response)
 
         # this first call is to set the cache
@@ -129,7 +129,7 @@ describe Cassette::Client do
         client.tgt('user', 'pass')
 
         tgt2 = 'TGT2-Something-example'
-        response = double('response', headers: { 'Location' => "tickets/#{tgt2}" })
+        response = instance_double('response', headers: { 'Location' => "tickets/#{tgt2}" })
         allow(http).to receive(:post).and_return(response)
 
         logger = spy(:logger)
@@ -187,26 +187,28 @@ describe Cassette::Client do
     context 'when tgt is a string' do
       let(:tgt_param) { tgt }
 
-      it_behaves_like 'http client interactions'
+      it_behaves_like 'with http client interactions'
     end
 
     context 'when tgt is a callable' do
       let(:tgt_param) { -> { tgt } }
 
-      it_behaves_like 'http client interactions'
+      it_behaves_like 'with http client interactions'
     end
 
     context 'with cache control' do
+      let(:cache_control) { subject }
+
       before do
         allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: force))
                                           .and_return(st)
       end
 
-      shared_context 'with controlling the force' do
+      shared_examples 'with controlling the force' do
         it { is_expected.to eq st }
 
         it 'forwards force to the cache' do
-          subject
+          cache_control
 
           expect(cache).to have_received(:fetch_st).with(tgt, service, hash_including(force: force))
         end
@@ -215,13 +217,13 @@ describe Cassette::Client do
       context 'when not using the force' do
         let(:force) { false }
 
-        include_context 'controlling the force'
+        include_context 'with controlling the force'
       end
 
       context 'when using the force' do
         let(:force) { true }
 
-        include_context 'controlling the force'
+        include_context 'with controlling the force'
       end
     end
   end
@@ -269,6 +271,9 @@ describe Cassette::Client do
     end
 
     context 'when tgt is cached but st is not' do
+      let(:cached_tgt) { subject }
+      let(:st_response) { Faraday::Response.new(body: st) }
+
       before do
         allow(cache).to receive(:fetch_tgt).with(hash_including(force: false)).and_return(tgt)
         allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: false)).and_yield
@@ -277,31 +282,35 @@ describe Cassette::Client do
                                      .and_return(st_response)
       end
 
-      let(:st_response) { Faraday::Response.new(body: st) }
-
       it 'returns the generated st' do
-        expect(subject).to eq st
+        expect(cached_tgt).to eq st
       end
 
       it 'generates an ST' do
-        subject
+        cached_tgt
 
         expect(http).to have_received(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
       end
     end
 
     context 'when st is cached' do
+      let(:cached_st) { subject }
+
       before do
         allow(cache).to receive(:fetch_st).with(tgt, service, hash_including(force: false)).and_return(st)
         allow(cache).to receive(:fetch_tgt).and_return(tgt)
       end
 
       it 'returns the cached value' do
-        expect(subject).to eq st
+        expect(cached_st).to eq st
       end
     end
 
     context 'when tgt is expired' do
+      let(:expired_tgt) { subject }
+      let(:tgt_response) { Faraday::Response.new(response_headers: { 'Location' => "/v1/tickets/#{tgt}" }) }
+      let(:st_response) { Faraday::Response.new(body: st) }
+
       before do
         allow(cache).to receive(:fetch_tgt).with(hash_including(force: false)).and_return(cached_tgt)
         allow(cache).to receive(:fetch_tgt).with(hash_including(force: true)).and_yield
@@ -318,41 +327,38 @@ describe Cassette::Client do
                                      .and_return(st_response)
       end
 
-      let(:tgt_response) { Faraday::Response.new(response_headers: { 'Location' => "/v1/tickets/#{tgt}" }) }
-      let(:st_response) { Faraday::Response.new(body: st) }
-
       it 'calls #fetch_st twice' do
-        subject
+        expired_tgt
 
         expect(cache).to have_received(:fetch_st).twice
       end
 
       it 'calls #fetch_tgt without forcing' do
-        subject
+        expired_tgt
 
         expect(cache).to have_received(:fetch_tgt).with(force: false)
       end
 
       it 'calls #fetch_tgt forcing' do
-        subject
+        expired_tgt
 
         expect(cache).to have_received(:fetch_tgt).with(force: true)
       end
 
       it 'tries to generate a ST with the expired TGT' do
-        subject
+        expired_tgt
 
         expect(http).to have_received(:post).with(%r{/v1/tickets/#{cached_tgt}\z}, service: service)
       end
 
       it 'retries to generate a ST with the new TGT' do
-        subject
+        expired_tgt
 
         expect(http).to have_received(:post).with(%r{/v1/tickets/#{tgt}\z}, service: service)
       end
 
       it 'returns a brand new tgt' do
-        expect(subject).to eq st
+        expect(expired_tgt).to eq st
       end
     end
   end
