@@ -23,6 +23,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rubycas-client'
   gem.add_development_dependency 'simplecov'
   gem.add_development_dependency 'rubocop'
+  gem.add_development_dependency 'rubocop-rspec'
   gem.add_development_dependency 'simplecov-rcov'
   gem.add_development_dependency 'simplecov-gem-adapter'
   gem.add_development_dependency 'codeclimate-test-reporter', '~> 1.0.0'

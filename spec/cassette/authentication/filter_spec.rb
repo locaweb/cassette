@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 describe Cassette::Authentication::Filter do
   before do
@@ -13,7 +13,7 @@ describe Cassette::Authentication::Filter do
 
   shared_examples_for 'controller behaviour' do
     describe '#validate_raw_role!' do
-      let(:controller) { controller_factory.(described_class).new }
+      let(:controller) { controller_factory.call(described_class).new }
       let(:current_user) { instance_double(Cassette::Authentication::User) }
 
       before do
@@ -22,7 +22,7 @@ describe Cassette::Authentication::Filter do
 
       it_behaves_like 'with NOAUTH' do
         it 'never checks the role' do
-          expect(current_user).not_to receive(:has_raw_role?)
+          allow(current_user).not_to receive(:has_raw_role?)
           controller.validate_raw_role!(:something)
         end
 
@@ -34,20 +34,20 @@ describe Cassette::Authentication::Filter do
       it 'forwards to current_user' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_raw_role?).with(role).and_return(true)
+        allow(current_user).to receive(:has_raw_role?).with(role).and_return(true)
         controller.validate_raw_role!(role)
       end
 
       it 'raises a Cassette::Errors::Forbidden when current_user does not have the role' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_raw_role?).with(role).and_return(false)
+        allow(current_user).to receive(:has_raw_role?).with(role).and_return(false)
         expect { controller.validate_raw_role!(role) }.to raise_error(Cassette::Errors::Forbidden)
       end
     end
 
     describe '#validate_role!' do
-      let(:controller) { controller_factory.(described_class).new }
+      let(:controller) { controller_factory.call(described_class).new }
       let(:current_user) { instance_double(Cassette::Authentication::User) }
 
       before do
@@ -56,7 +56,7 @@ describe Cassette::Authentication::Filter do
 
       it_behaves_like 'with NOAUTH' do
         it 'never checks the role' do
-          expect(current_user).not_to receive(:has_role?)
+          allow(current_user).not_to receive(:has_role?)
           controller.validate_role!(:something)
         end
 
@@ -68,14 +68,14 @@ describe Cassette::Authentication::Filter do
       it 'forwards to current_user' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_role?).with(role).and_return(true)
+        allow(current_user).to receive(:has_role?).with(role).and_return(true)
         controller.validate_role!(role)
       end
 
       it 'raises a Cassette::Errors::Forbidden when current_user does not have the role' do
         role = instance_double(String)
 
-        expect(current_user).to receive(:has_role?).with(role).and_return(false)
+        allow(current_user).to receive(:has_role?).with(role).and_return(false)
         expect { controller.validate_role!(role) }.to raise_error(Cassette::Errors::Forbidden)
       end
     end
@@ -94,23 +94,23 @@ describe Cassette::Authentication::Filter do
       end
 
       it_behaves_like 'with NOAUTH' do
-        context 'and no ticket' do
-          let(:controller) { controller_factory.(described_class).new }
+        context 'when no ticket is passed' do
+          let(:controller) { controller_factory.call(described_class).new }
 
           it_behaves_like 'controller without authentication'
         end
 
-        context 'and a ticket header' do
+        context 'when a ticket header is passed' do
           let(:controller) do
-            controller_factory.(described_class).new({}, 'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class).new({}, 'Service-Ticket' => 'le ticket')
           end
 
           it_behaves_like 'controller without authentication'
         end
 
-        context 'and a ticket param' do
+        context 'when a ticket param is passed' do
           let(:controller) do
-            controller_factory.(described_class).new(ticket: 'le ticket')
+            controller_factory.call(described_class).new(ticket: 'le ticket')
           end
 
           it_behaves_like 'controller without authentication'
@@ -119,12 +119,12 @@ describe Cassette::Authentication::Filter do
 
       context 'when accepts_authentication_service? returns false' do
         let(:controller) do
-          controller_factory.(described_class).new(ticket: 'le ticket')
+          controller_factory.call(described_class).new(ticket: 'le ticket')
         end
 
         before do
-          expect(controller).to receive(:accepts_authentication_service?)
-            .with(Cassette.config.service) { false }
+          allow(controller).to receive(:accepts_authentication_service?)
+            .with(Cassette.config.service).and_return(false)
         end
 
         it 'raises a Cassette::Errors::Forbidden' do
@@ -135,29 +135,31 @@ describe Cassette::Authentication::Filter do
 
       context 'when accepts_authentication_service? returns true' do
         before do
-          expect(controller).to receive(:accepts_authentication_service?).with(anything) { true }
+          allow(controller).to receive(:accepts_authentication_service?).with(anything).and_return(true)
         end
 
         context 'with a ticket in the query string *AND* headers' do
           let(:controller) do
-            controller_factory.(described_class).new({ 'ticket' => 'le other ticket' },
-                                                'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class).new({ 'ticket' => 'le other ticket' },
+                                                         'Service-Ticket' => 'le ticket')
           end
 
-          it 'should send only the header ticket to validation' do
+          it 'sends only the header ticket to validation' do
             controller.validate_authentication_ticket
-            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket',
+                                                                                     Cassette.config.service)
           end
         end
 
         context 'with a ticket in the query string' do
           let(:controller) do
-            controller_factory.(described_class).new('ticket' => 'le ticket')
+            controller_factory.call(described_class).new('ticket' => 'le ticket')
           end
 
-          it 'should send the ticket to validation' do
+          it 'sends the ticket to validation' do
             controller.validate_authentication_ticket
-            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket', Cassette.config.service)
+            expect(Cassette::Authentication).to have_received(:validate_ticket).with('le ticket',
+                                                                                     Cassette.config.service)
           end
         end
 
@@ -169,7 +171,7 @@ describe Cassette::Authentication::Filter do
               end
             end
 
-            controller_factory.(described_class, mod).new({}, 'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class, mod).new({}, 'Service-Ticket' => 'le ticket')
           end
 
           it 'validates with the overriden value and not the config' do
@@ -182,7 +184,7 @@ describe Cassette::Authentication::Filter do
 
         context 'with a ticket in the Service-Ticket header' do
           let(:controller) do
-            controller_factory.(described_class).new({}, 'Service-Ticket' => 'le ticket')
+            controller_factory.call(described_class).new({}, 'Service-Ticket' => 'le ticket')
           end
 
           it 'sends the ticket to validation' do
@@ -196,37 +198,37 @@ describe Cassette::Authentication::Filter do
     end
 
     describe '#accepts_authentication_service?' do
+      subject { controller.accepts_authentication_service?(service) }
+
       let(:controller) do
-        controller_factory.(described_class).new(ticket: 'le ticket')
+        controller_factory.call(described_class).new(ticket: 'le ticket')
       end
 
       before do
         allow(Cassette).to receive(:config) { config }
       end
 
-      subject { controller.accepts_authentication_service?(service) }
-
       context 'when config responds to #services' do
-        let(:subdomain) { "subdomain.acme.org" }
-        let(:not_related) { "acme.org" }
+        let(:subdomain) { 'subdomain.acme.org' }
+        let(:not_related) { 'acme.org' }
 
         let(:config) do
           OpenStruct.new(YAML.load_file('spec/config.yml').merge(services: [subdomain]))
         end
 
-        context 'and the authentication service is included in the configuration' do
+        context 'when the authentication service is included in the configuration' do
           let(:service) { subdomain }
 
           it { is_expected.to eq true }
         end
 
-        context 'and the authentication service is Cassette.config.service' do
+        context 'when the authentication service is Cassette.config.service' do
           let(:service) { Cassette.config.service }
 
           it { is_expected.to eq true }
         end
 
-        context 'and the authentication service is not included in the configuration' do
+        context 'when the authentication service is not included in the configuration' do
           let(:service) { not_related }
 
           it { is_expected.to eq false }
@@ -235,13 +237,13 @@ describe Cassette::Authentication::Filter do
     end
   end
 
-  context 'a Rails 4+ controller' do
+  context 'when controller belongs to Rails 4+' do
     let(:controller_factory) { method(:ControllerMock) }
 
     it_behaves_like 'controller behaviour'
   end
 
-  context 'a Rails 3 controller' do
+  context 'when controller belongs to Rails 3' do
     let(:controller_factory) { method(:LegacyControllerMock) }
 
     it_behaves_like 'controller behaviour'

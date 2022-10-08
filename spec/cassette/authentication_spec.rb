@@ -1,11 +1,12 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 describe Cassette::Authentication do
+  subject(:authentication) do
+    described_class.new(cache: cache, http_client: http)
+  end
+
   let(:cache) { instance_double(Cassette::Authentication::Cache) }
   let(:http)  { instance_double(Cassette::Http::Request) }
-
-  subject(:authentication) do
-    Cassette::Authentication.new(cache: cache, http_client: http)
-  end
 
   describe '#ticket_user' do
     subject(:ticket_user) { authentication.ticket_user(ticket) }
@@ -21,15 +22,16 @@ describe Cassette::Authentication do
       end
 
       it { is_expected.to eql(cached_value) }
+
       it 'calls Cache#fetch_authentication with ticket and service' do
-        expect(cache).to receive(:fetch_authentication)
+        allow(cache).to receive(:fetch_authentication)
           .with(ticket, service)
 
         ticket_user
       end
 
       it 'passes a block to Cache#fetch_authentication' do
-        expect(cache).to receive(:fetch_authentication) do |*, &block|
+        allow(cache).to receive(:fetch_authentication) do |*, &block|
           expect(block).to be_present
         end
 
@@ -38,21 +40,25 @@ describe Cassette::Authentication do
     end
 
     context 'when not cached' do
+      def auth
+        subject
+      end
+
       before do
-        expect(cache).to receive(:fetch_authentication) do |_ticket, &block|
+        allow(cache).to receive(:fetch_authentication) do |_ticket, &block|
           block.call
         end
       end
 
       it 'raises a Forbidden exception on any exceptions' do
         allow(http).to receive(:get).with(anything, anything).and_raise(Cassette::Errors::BadRequest)
-        expect { subject.ticket_user('ticket') }.to raise_error(Cassette::Errors::Forbidden)
+        expect { auth.ticket_user('ticket') }.to raise_error(Cassette::Errors::Forbidden)
       end
 
       context 'with a failed CAS response' do
         before do
           allow(http).to receive(:get).with(anything, anything)
-            .and_return(OpenStruct.new(body: fixture('cas/fail.xml')))
+                                      .and_return(OpenStruct.new(body: fixture('cas/fail.xml')))
         end
 
         it 'returns nil' do
@@ -63,7 +69,7 @@ describe Cassette::Authentication do
       context 'with a successful CAS response' do
         before do
           allow(http).to receive(:get).with(anything, anything)
-            .and_return(OpenStruct.new(body: fixture('cas/success.xml')))
+                                      .and_return(OpenStruct.new(body: fixture('cas/success.xml')))
         end
 
         it 'returns an User' do
@@ -74,23 +80,27 @@ describe Cassette::Authentication do
   end
 
   describe '#validate_ticket' do
+    subject(:service) { Cassette.config.service }
+
+    let(:ticket) { described_class.new }
+
     it 'raises a authorization required error when no ticket is provided' do
-      expect { subject.validate_ticket(nil) }.to raise_error(Cassette::Errors::AuthorizationRequired)
+      expect { ticket.validate_ticket(nil) }.to raise_error(Cassette::Errors::AuthorizationRequired)
     end
 
     it 'raises a authorization required error when ticket is blank' do
-      expect { subject.validate_ticket('') }.to raise_error(Cassette::Errors::AuthorizationRequired)
+      expect { ticket.validate_ticket('') }.to raise_error(Cassette::Errors::AuthorizationRequired)
     end
 
     it 'raises a forbidden error when the associated user is not found' do
-      expect(subject).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(nil)
-      expect { subject.validate_ticket('ticket') }.to raise_error(Cassette::Errors::Forbidden)
+      allow(ticket).to receive(:ticket_user).with('ticket', service).and_return(nil)
+      expect { ticket.validate_ticket('ticket') }.to raise_error(Cassette::Errors::Forbidden)
     end
 
     it 'returns the associated user' do
-      user = double('User')
-      expect(subject).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(user)
-      expect(subject.validate_ticket('ticket')).to eql(user)
+      user = instance_double(described_class, 'User')
+      allow(ticket).to receive(:ticket_user).with('ticket', service).and_return(user)
+      expect(ticket.validate_ticket('ticket')).to eql(user)
     end
   end
 end

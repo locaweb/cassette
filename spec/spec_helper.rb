@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 require 'simplecov-rcov'
 require 'simplecov-gem-adapter'
@@ -5,9 +7,7 @@ require 'yaml'
 require 'webmock/rspec'
 require 'rspec/its'
 require 'faker'
-if RUBY_VERSION >= '2.4.0'
-  require 'pry-byebug'
-end
+require 'pry-byebug' if RUBY_VERSION >= '2.4.0'
 
 Dir['spec/support/**/*.rb'].each { |f| load f }
 

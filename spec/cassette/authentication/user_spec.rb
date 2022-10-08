@@ -1,4 +1,4 @@
-
+# frozen_string_literal: true
 
 describe Cassette::Authentication::User do
   let(:base_authority) do
@@ -8,8 +8,8 @@ describe Cassette::Authentication::User do
   describe '#initialize' do
     context 'without a config' do
       it 'forwards authorities parsing' do
-        expect(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', nil)
-        Cassette::Authentication::User.new(login: 'john.doe', name: 'John Doe', authorities: '[CUSTOMERAPI, SAPI]')
+        allow(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', nil)
+        described_class.new(login: 'john.doe', name: 'John Doe', authorities: '[CUSTOMERAPI, SAPI]')
       end
     end
 
@@ -17,54 +17,84 @@ describe Cassette::Authentication::User do
       it 'forwards authorities parsing passing along the base authority' do
         config = object_double(Cassette.config)
 
-        expect(config).to receive(:base_authority).and_return('TESTAPI')
-        expect(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', 'TESTAPI')
+        allow(config).to receive(:base_authority).and_return('TESTAPI')
+        allow(Cassette::Authentication::Authorities).to receive(:new).with('[CUSTOMERAPI, SAPI]', 'TESTAPI')
 
-        Cassette::Authentication::User.new(login: 'john.doe', name: 'John Doe',
-                                           authorities: '[CUSTOMERAPI, SAPI]', config: config)
+        described_class.new(login: 'john.doe', name: 'John Doe',
+                            authorities: '[CUSTOMERAPI, SAPI]', config: config)
       end
     end
   end
 
   describe '#has_role?' do
     let(:user) do
-      Cassette::Authentication::User.new(login: 'john.doe', name: 'John Doe',
-                                         authorities: "[#{base_authority}, SAPI, #{base_authority}_CREATE-USER]")
+      described_class.new(login: 'john.doe', name: 'John Doe',
+                          authorities: "[#{base_authority}, SAPI, #{base_authority}_CREATE-USER]")
     end
 
     it 'adds the application prefix to roles' do
-      expect(user.has_role?('CREATE-USER')).to eql(true)
+      expect(user.has_role?('CREATE-USER')).to be(true)
     end
 
     it 'ignores role case' do
-      expect(user.has_role?('create-user')).to eql(true)
+      expect(user.has_role?('create-user')).to be(true)
     end
 
     it 'replaces underscores with dashes' do
-      expect(user.has_role?('create_user')).to eql(true)
+      expect(user.has_role?('create_user')).to be(true)
     end
   end
 
-  context 'user types' do
-    context '#employee?' do
+  context 'when checking user types' do
+    describe '#employee?' do
       it 'returns true when user is an employee' do
-        expect(Cassette::Authentication::User.new(type: 'employee')).to be_employee
-        expect(Cassette::Authentication::User.new(type: 'Employee')).to be_employee
-        expect(Cassette::Authentication::User.new(type: :employee)).to be_employee
-        expect(Cassette::Authentication::User.new(type: 'customer')).not_to be_employee
-        expect(Cassette::Authentication::User.new(type: nil)).not_to be_employee
-        expect(Cassette::Authentication::User.new(type: '')).not_to be_employee
+        expect(described_class.new(type: 'employee')).to be_employee
+      end
+
+      it 'returns true when user is an Employee' do
+        expect(described_class.new(type: 'Employee')).to be_employee
+      end
+
+      it 'returns true when user is an :employee' do
+        expect(described_class.new(type: :employee)).to be_employee
+      end
+
+      it 'returns false when user is an customer' do
+        expect(described_class.new(type: 'customer')).not_to be_employee
+      end
+
+      it 'returns false when user is nil' do
+        expect(described_class.new(type: nil)).not_to be_employee
+      end
+
+      it 'returns false when user type is empty' do
+        expect(described_class.new(type: '')).not_to be_employee
       end
     end
 
-    context '#customer?' do
+    describe '#customer?' do
       it 'returns true when the user is a customer' do
-        expect(Cassette::Authentication::User.new(type: 'customer')).to be_customer
-        expect(Cassette::Authentication::User.new(type: 'Customer')).to be_customer
-        expect(Cassette::Authentication::User.new(type: :customer)).to be_customer
-        expect(Cassette::Authentication::User.new(type: 'employee')).not_to be_customer
-        expect(Cassette::Authentication::User.new(type: nil)).not_to be_customer
-        expect(Cassette::Authentication::User.new(type: '')).not_to be_customer
+        expect(described_class.new(type: 'customer')).to be_customer
+      end
+
+      it 'returns true when the user is a Customer' do
+        expect(described_class.new(type: 'Customer')).to be_customer
+      end
+
+      it 'returns true when the user is a :customer' do
+        expect(described_class.new(type: :customer)).to be_customer
+      end
+
+      it 'returns false when the user is a employee' do
+        expect(described_class.new(type: 'employee')).not_to be_customer
+      end
+
+      it 'returns false when the user is nil' do
+        expect(described_class.new(type: nil)).not_to be_customer
+      end
+
+      it 'returns false when the user type is empty' do
+        expect(described_class.new(type: '')).not_to be_customer
       end
     end
   end

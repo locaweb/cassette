@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 require 'active_support/core_ext/hash/indifferent_access'
 
@@ -16,6 +16,7 @@ end
 
 class ControllerMock
   attr_accessor :params, :request, :current_user
+
   def self.before_action(*); end
 
   def initialize(params = {}, headers = {})
@@ -26,6 +27,7 @@ end
 
 class LegacyControllerMock
   attr_accessor :params, :request, :current_user
+
   def self.before_filter(*); end
 
   def initialize(params = {}, headers = {})

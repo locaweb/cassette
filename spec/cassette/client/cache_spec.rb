@@ -1,17 +1,13 @@
-# encoding: utf-8
-
-
+# frozen_string_literal: true
 
 describe Cassette::Client::Cache do
   it 'uses the cache store set in configuration' do
     # setup
-    global_cache = double('cache_store')
+    global_cache = instance_double(described_class, 'cache_store')
     Cassette.cache_backend = global_cache
 
-    logger = Logger.new('/dev/null')
-
     # exercise
-    client_cache = described_class.new(logger)
+    client_cache = described_class.new(Logger.new('/dev/null'))
 
     expect(client_cache.backend).to eq(global_cache)
 
@@ -22,14 +18,13 @@ describe Cassette::Client::Cache do
   describe '.backend=' do
     it 'sets the cache' do
       # setup
-      global_cache = double('cache_store')
-      logger = Logger.new('/dev/null')
+      global_cache = instance_double(described_class, 'cache_store')
 
       # exercise
       Cassette::Client.cache.backend = global_cache
 
       # verify
-      client_cache = described_class.new(logger)
+      client_cache = described_class.new(Logger.new('/dev/null'))
       expect(client_cache.backend).to eql(global_cache)
 
       # tear down

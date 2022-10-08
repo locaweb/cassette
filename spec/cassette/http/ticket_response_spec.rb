@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cassette::Http::TicketResponse do
   subject(:ticket_response) { described_class.new(xml_response) }
 
@@ -8,7 +10,7 @@ describe Cassette::Http::TicketResponse do
 
     it { is_expected.to eq('test-user') }
 
-    context "when response isn't successful"  do
+    context "when response isn't successful" do
       let(:xml_response) { fixture('cas/fail.xml') }
 
       it { is_expected.to be_nil }
@@ -20,7 +22,7 @@ describe Cassette::Http::TicketResponse do
 
     it { is_expected.to eq('Test System') }
 
-    context "when response isn't successful"  do
+    context "when response isn't successful" do
       let(:xml_response) { fixture('cas/fail.xml') }
 
       it { is_expected.to be_nil }
@@ -32,7 +34,7 @@ describe Cassette::Http::TicketResponse do
 
     it { is_expected.to eq('[CUPOM, AUDITING,]') }
 
-    context "when response isn't successful"  do
+    context "when response isn't successful" do
       let(:xml_response) { fixture('cas/fail.xml') }
 
       it { is_expected.to be_nil }

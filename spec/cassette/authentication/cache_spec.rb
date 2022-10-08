@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 describe Cassette::Authentication::Cache do
   subject(:cache) { described_class.new(Logger.new('/dev/null')) }
@@ -8,10 +8,11 @@ describe Cassette::Authentication::Cache do
       cache.fetch_authentication(ticket, service, &block)
     end
 
-    let(:second_call) do
+    def second_call
       cache.fetch_authentication(ticket, service, &other_block)
     end
-    let(:call_with_other_service) do
+
+    def call_with_other_service
       cache.fetch_authentication(ticket, other_service, &other_block)
     end
 
@@ -23,13 +24,12 @@ describe Cassette::Authentication::Cache do
     let(:block) { -> { 1 } }
     let(:other_block) { -> { 2 } }
 
-
     before { cache.fetch_authentication(ticket, service, &block) }
 
     it { is_expected.to eq(1) }
 
     context 'when for a second time' do
-      it  { expect(second_call).to eq(1) }
+      it { expect(second_call).to eq(1) }
 
       it do
         expect(other_block).not_to receive(:call)
@@ -37,19 +37,17 @@ describe Cassette::Authentication::Cache do
       end
 
       context 'when calling with a different service' do
-        it  { expect(call_with_other_service).to eq(2) }
+        it { expect(call_with_other_service).to eq(2) }
       end
     end
 
     it 'uses the cache store set in configuration' do
       # setup
-      global_cache = double('cache_store')
+      global_cache = instance_double(described_class, 'cache_store')
       Cassette.cache_backend = global_cache
 
-      logger = Logger.new('/dev/null')
-
       # exercise
-      auth_cache = described_class.new(logger)
+      auth_cache = described_class.new(Logger.new('/dev/null'))
 
       expect(auth_cache.backend).to eq(global_cache)
 
