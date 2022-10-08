@@ -71,7 +71,7 @@ describe Cassette::Client do
         described_class.cache.backend.clear
 
         tgt = 'TGT-Something-example'
-        response = double('response', headers: { 'Location' => "tickets/#{tgt}" })
+        response = instance_double('response', headers: { 'Location' => "tickets/#{tgt}" })
         allow(http).to receive(:post).and_return(response)
 
         logger = spy(:logger)
@@ -98,7 +98,7 @@ describe Cassette::Client do
         described_class.cache.backend.clear
 
         tgt = 'TGT-Something-example'
-        response = double('response', headers: { 'Location' => "tickets/#{tgt}" })
+        response = instance_double('response', headers: { 'Location' => "tickets/#{tgt}" })
         allow(http).to receive(:post).and_return(response)
 
         # this first call is to set the cache

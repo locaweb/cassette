@@ -3,6 +3,8 @@
 describe Cassette::Http::Request do
   subject(:request) { described_class }
 
+  let(:request_subject) { subject }
+
   describe '.post' do
     subject(:post) { request.post(path, payload) }
 
@@ -26,9 +28,9 @@ describe Cassette::Http::Request do
     end
 
     it do
-      expect(subject).to have_attributes(
-        headers: { 'Content-Type' => 'application/json' },
-        body: '{"ok":"true"}',
+      expect(request_subject).to have_attributes(
+        headers: { 'content-type' => 'application/json' },
+        body: '{"ok":true}',
         status: 200
       )
     end
