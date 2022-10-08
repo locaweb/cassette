@@ -40,6 +40,10 @@ describe Cassette::Authentication do
     end
 
     context 'when not cached' do
+      def auth
+        subject
+      end
+
       before do
         allow(cache).to receive(:fetch_authentication) do |_ticket, &block|
           block.call
@@ -48,7 +52,7 @@ describe Cassette::Authentication do
 
       it 'raises a Forbidden exception on any exceptions' do
         allow(http).to receive(:get).with(anything, anything).and_raise(Cassette::Errors::BadRequest)
-        expect { subject.ticket_user('ticket') }.to raise_error(Cassette::Errors::Forbidden)
+        expect { auth.ticket_user('ticket') }.to raise_error(Cassette::Errors::Forbidden)
       end
 
       context 'with a failed CAS response' do
@@ -76,7 +80,9 @@ describe Cassette::Authentication do
   end
 
   describe '#validate_ticket' do
-    subject(:ticket) { described_class.new }
+    subject(:service) { Cassette.config.service }
+
+    let(:ticket) { described_class.new }
 
     it 'raises a authorization required error when no ticket is provided' do
       expect { ticket.validate_ticket(nil) }.to raise_error(Cassette::Errors::AuthorizationRequired)
@@ -87,13 +93,13 @@ describe Cassette::Authentication do
     end
 
     it 'raises a forbidden error when the associated user is not found' do
-      allow(ticket).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(nil)
+      allow(ticket).to receive(:ticket_user).with('ticket', service).and_return(nil)
       expect { ticket.validate_ticket('ticket') }.to raise_error(Cassette::Errors::Forbidden)
     end
 
     it 'returns the associated user' do
-      user = double('User')
-      allow(ticket).to receive(:ticket_user).with('ticket', Cassette.config.service).and_return(user)
+      user = instance_double(described_class, 'User')
+      allow(ticket).to receive(:ticket_user).with('ticket', service).and_return(user)
       expect(ticket.validate_ticket('ticket')).to eql(user)
     end
   end
