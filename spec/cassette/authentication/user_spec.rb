@@ -24,6 +24,52 @@ describe Cassette::Authentication::User do
                                            authorities: '[CUSTOMERAPI, SAPI]', config: config)
       end
     end
+
+    context 'attributes' do
+      it 'takes login from the attributes' do
+        user = described_class.new(login: 'john.doe')
+
+        expect(user.login).to eql('john.doe')
+      end
+
+      it 'takes name from the attributes' do
+        user = described_class.new(name: 'John Doe')
+
+        expect(user.name).to eql('John Doe')
+      end
+    end
+  end
+
+  describe '#attribute' do
+    it 'returns attributes given to the user' do
+      user = described_class.new(
+        login: 'john.doe',
+        name: 'John Doe',
+        attributes: { 'attribute' => 'something' }
+      )
+
+      expect(user.attribute('attribute')).to eql('something')
+    end
+
+    it 'retuns nil for attributes not given to the user' do
+      user = described_class.new(
+        login: 'john.doe',
+        name: 'John Doe',
+        attributes: { 'attribute' => 'something' }
+      )
+
+      expect(user.attribute('other_attribute')).to be_nil
+    end
+
+    it 'does not return attributes that are already extracted' do
+      user = described_class.new(
+        login: 'john.doe',
+        name: 'John Doe',
+        attributes: { 'attribute' => 'something' }
+      )
+
+      expect(user.attribute('login')).to be_nil
+    end
   end
 
   describe '#has_role?' do

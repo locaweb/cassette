@@ -38,4 +38,22 @@ describe Cassette::Http::TicketResponse do
       it { is_expected.to be_nil }
     end
   end
+
+  describe '#attributes' do
+    subject(:attributes) { ticket_response.attributes }
+
+    context 'when response is successful' do
+      let(:xml_response) { fixture('cas/success.xml') }
+
+      it 'returns the attributes not already extracted' do
+        expect(subject).to eq('type' => 'System', 'attribute' => 'something')
+      end
+    end
+
+    context 'when response is not successful' do
+      let(:xml_response) { fixture('cas/fail.xml') }
+
+      it { is_expected.to be_nil }
+    end
+  end
 end

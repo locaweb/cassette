@@ -69,6 +69,12 @@ describe Cassette::Authentication do
         it 'returns an User' do
           expect(ticket_user).to be_instance_of(Cassette::Authentication::User)
         end
+
+        it 'sets attributes from the ticket response' do
+          expect(ticket_user.login).to eql('test-user')
+          expect(ticket_user.name).to eql('Test System')
+          expect(ticket_user.attribute('type')).to eql('system')
+        end
       end
     end
   end

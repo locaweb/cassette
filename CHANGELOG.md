@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
 
+### Added
+- Provide `Cassette::Authentication::User#attribute` to fetch generic attributes
+  from the user in the ticket validation response
+
 ## [1.6.0] - 2020-11-26
 ### Changed
 - Make `cas_extra_attributes` accessible as strings or symbols when restoring

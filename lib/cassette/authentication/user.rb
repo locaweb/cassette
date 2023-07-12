@@ -19,8 +19,13 @@ module Cassette
         @type        = attrs[:type]
         @email       = attrs[:email]
         @ticket      = attrs[:ticket]
+        @attributes  = attrs
         @authorities = Cassette::Authentication::Authorities
                        .parse(attrs.fetch(:authorities, '[]'), config && config.base_authority)
+      end
+
+      def attribute(key)
+        @attributes[key]
       end
 
       %w(customer employee).each do |type|

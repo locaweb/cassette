@@ -36,13 +36,17 @@ module Cassette
 
           logger.info("Validation resut: #{response.inspect}")
 
-          Cassette::Authentication::User.new(
-            login: ticket_response.login,
-            name: ticket_response.name,
-            authorities: ticket_response.authorities,
-            ticket: ticket,
-            config: config
-          ) if ticket_response.login
+          if ticket_response.login
+            attributes = ticket_response.attributes.dup.merge(
+              login: ticket_response.login,
+              name: ticket_response.name,
+              authorities: ticket_response.authorities,
+              ticket: ticket,
+              config: config
+            )
+
+            Cassette::Authentication::User.new(attributes)
+          end
         rescue => exception
           logger.error "Error while authenticating ticket #{ticket}: #{exception.message}"
           raise Cassette::Errors::Forbidden, exception.message
