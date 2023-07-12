@@ -9,18 +9,22 @@ module Cassette
     class User
       extend Forwardable
 
-      attr_accessor :login, :name, :authorities, :email, :ticket, :type
+      attr_accessor :login, :name, :authorities, :email, :ticket, :type,
+                    :extra_attributes
+
       def_delegators :@authorities, :has_role?, :has_raw_role?
 
       def initialize(attrs = {})
-        config       = attrs[:config]
-        @login       = attrs[:login]
-        @name        = attrs[:name]
-        @type        = attrs[:type]
-        @email       = attrs[:email]
-        @ticket      = attrs[:ticket]
-        @authorities = Cassette::Authentication::Authorities
-                       .parse(attrs.fetch(:authorities, '[]'), config && config.base_authority)
+        config            = attrs[:config]
+        @login            = attrs[:login]
+        @name             = attrs[:name]
+        @type             = attrs[:type]
+        @email            = attrs[:email]
+        @ticket           = attrs[:ticket]
+        @extra_attributes = attrs[:extra_attributes]
+        @authorities      = Cassette::Authentication::Authorities
+                            .parse(attrs.fetch(:authorities, '[]'),
+                                   config&.base_authority)
       end
 
       %w(customer employee).each do |type|

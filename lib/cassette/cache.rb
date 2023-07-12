@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 begin
+  require 'active_support'
   require 'active_support/cache'
 rescue LoadError
   require 'cassette/cache/null_store'

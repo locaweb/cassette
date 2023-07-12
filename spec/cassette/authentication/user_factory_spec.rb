@@ -17,7 +17,8 @@ RSpec.describe Cassette::Rubycas::UserFactory do
         cas_extra_attributes: {
           email: Faker::Internet.email(name),
           type: 'Customer',
-          authorities: '[CASTEST_ADMIN]'
+          authorities: '[CASTEST_ADMIN]',
+          extra: 'some value'
         }
       }
     end
@@ -35,11 +36,15 @@ RSpec.describe Cassette::Rubycas::UserFactory do
       its(:name) { is_expected.to eq(attributes[:name]) }
       its(:email) { is_expected.to eq(attributes[:email]) }
       its(:type) { is_expected.to eq(attributes[:type].downcase) }
+      its(:extra_attributes) do
+        is_expected
+          .to eq(attributes.except(:email, :type, :authorities).stringify_keys)
+      end
       it { is_expected.to be_customer }
       it { is_expected.not_to be_employee }
     end
 
-    context 'when key cas_extra_attributes is string' do
+    context 'when key authorities is a string' do
       let(:session) do
         name = Faker.name
 

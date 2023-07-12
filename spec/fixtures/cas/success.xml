@@ -6,6 +6,8 @@
     <cas:attributes>
       <cas:authorities>[CUPOM, AUDITING,]</cas:authorities>
       <cas:cn>Test System</cas:cn>
+      <cas:extra>value</cas:extra>
+      <cas:camelKey>camelValue</cas:camelKey>
     </cas:attributes>
     <!-- End Ldap Attributes -->
     </cas:authenticationSuccess>
