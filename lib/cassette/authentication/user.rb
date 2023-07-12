@@ -21,10 +21,15 @@ module Cassette
         @type             = attrs[:type]
         @email            = attrs[:email]
         @ticket           = attrs[:ticket]
-        @extra_attributes = attrs[:extra_attributes]
         @authorities      = Cassette::Authentication::Authorities
                             .parse(attrs.fetch(:authorities, '[]'),
                                    config&.base_authority)
+        @extra_attributes = attrs[:extra_attributes] || {}
+        @extra_attributes.each_pair do |key, value|
+          if respond_to?("#{key}=")
+            send("#{key}=", value)
+          end
+        end
       end
 
       %w(customer employee).each do |type|

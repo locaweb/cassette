@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
 
+### Added
+- Assign know user attributes from extra_attributes
+
 ## [1.7.0] - 2023-07-12
 ### Added
 - Make CAS extra attributes available in `Cas::Authentication::User`

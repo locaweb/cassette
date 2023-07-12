@@ -13,9 +13,9 @@ RSpec.describe Cassette::Rubycas::UserFactory do
       name = Faker.name
 
       {
-        cas_user: Faker::Internet.user_name(name),
+        cas_user: Faker::Internet.user_name(specifier: name),
         cas_extra_attributes: {
-          email: Faker::Internet.email(name),
+          email: Faker::Internet.email(name: name),
           type: 'Customer',
           authorities: '[CASTEST_ADMIN]',
           extra: 'some value'
@@ -49,9 +49,9 @@ RSpec.describe Cassette::Rubycas::UserFactory do
         name = Faker.name
 
         {
-          cas_user: Faker::Internet.user_name(name),
+          cas_user: Faker::Internet.user_name(specifier: name),
           cas_extra_attributes: {
-            'email' => Faker::Internet.email(name),
+            'email' => Faker::Internet.email(name: name),
             'type' => 'Customer',
             'authorities' => '[CASTEST_ADMIN]'
           }
