@@ -215,3 +215,7 @@ Cassette::Client.cache.backend.clear
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Releasing
+
+You can use the `./scripts/docker-release.sh` to push a version to rubygems
