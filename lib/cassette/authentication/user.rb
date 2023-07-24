@@ -27,7 +27,7 @@ module Cassette
         @extra_attributes = attrs[:extra_attributes] || {}
         @extra_attributes.each_pair do |key, value|
           if respond_to?("#{key}=")
-            send("#{key}=", value)
+            public_send("#{key}=", value)
           end
         end
       end
