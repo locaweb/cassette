@@ -24,6 +24,20 @@ describe Cassette::Authentication::User do
                                            authorities: '[CUSTOMERAPI, SAPI]', config: config)
       end
     end
+
+    context 'with extra attributes' do
+      it 'sets attributes that user responds to' do
+        user = Cassette::Authentication::User.new(login: 'john.doe', extra_attributes: { 'type' => 'employee' })
+
+        expect(user.type).to eq('employee')
+      end
+
+      it 'lets extra_attributes override other arguments' do
+        user = Cassette::Authentication::User.new(name: 'John Doe', extra_attributes: { 'name' => 'Jane Doe' })
+
+        expect(user.name).to eq('Jane Doe')
+      end
+    end
   end
 
   describe '#has_role?' do
