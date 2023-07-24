@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
 
+## [1.8.0] - 2023-07-24
+
 ### Added
 - Assign know user attributes from extra_attributes
 
